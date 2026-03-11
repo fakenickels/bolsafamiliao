@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Funcionalismo &mdash; Assistencial&atilde;o</title>
+    <meta name="description" content="Supersal&aacute;rios de servidores p&uacute;blicos brasileiros: teto furado, penduricalhos, e a m&aacute;quina que custa mais que sa&uacute;de e educa&ccedil;&atilde;o juntas.">
+    <meta property="og:title" content="Funcionalismo &mdash; Assistencial&atilde;o">
+    <meta property="og:description" content="O servidor que custa mais que o pa&iacute;s inteiro. Dados abertos sobre a folha de pessoal p&uacute;blica.">
+    <meta property="og:type" content="article">
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="../shared.js"></script>
+    <style>
+        .teto-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+            margin-top: 2rem;
+        }
+        .teto-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .teto-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(244, 162, 97, 0.5);
+        }
+        .teto-card .teto-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent-yellow);
+            margin-bottom: 0.25rem;
+        }
+        .teto-card .teto-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .teto-card .teto-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .math-box .math-total {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--accent-light);
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        @media (max-width: 768px) {
+            .teto-examples { grid-template-columns: 1fr; }
+            .chart-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="/" class="logo">Assistencial&atilde;o</a>
+        <button class="nav-toggle" aria-label="Menu">&#9776;</button>
+        <ul class="nav-links">
+            <li><a href="/bolsa-opio/">Bolsa &Oacute;pio</a></li>
+            <li><a href="/funcionalismao/" class="active">Funcionalismo</a></li>
+            <li><a href="/judiciario/">Judiciari&atilde;o</a></li>
+            <li><span class="nav-disabled">Previdenciari&atilde;o</span></li>
+            <li><span class="nav-disabled">TCU &amp; &Oacute;rg&atilde;os</span></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section id="hero">
+    <div class="section-label">Funcionalismo &mdash; O peso da m&aacute;quina</div>
+    <h1><span class="hero-highlight">Funcionalismo:</span> O servidor que custa mais que o pa&iacute;s inteiro</h1>
+    <p class="subtitle">
+        O Brasil tem uma das folhas de pagamento p&uacute;blicas mais caras do mundo em rela&ccedil;&atilde;o ao PIB.
+        Enquanto a popula&ccedil;&atilde;o luta com sal&aacute;rio m&iacute;nimo, servidores p&uacute;blicos
+        recebem 13,2 vezes mais que o trabalhador mediano do setor privado &mdash; e contam com estabilidade
+        absoluta, sem avalia&ccedil;&atilde;o de desempenho.
+    </p>
+
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <div class="number">R$ 365 bi/ano</div>
+            <div class="label">Folha de pessoal (Uni&atilde;o)</div>
+        </div>
+        <div class="hero-stat">
+            <div class="number">13,2x</div>
+            <div class="label">Diferen&ccedil;a salarial p&uacute;blico vs privado (mediana)</div>
+        </div>
+        <div class="hero-stat">
+            <div class="number">R$ 44,4 mil</div>
+            <div class="label">Teto constitucional (STF) &mdash; mas ningu&eacute;m respeita</div>
+        </div>
+        <div class="hero-stat">
+            <div class="number">583 mil</div>
+            <div class="label">Servidores federais ativos civis</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== PROBLEMA ==================== -->
+<section class="fade-in">
+    <div class="section-label">O problema</div>
+    <h2>Uma casta protegida pelo Estado</h2>
+    <p class="subtitle">
+        Tr&ecirc;s pilares sustentam os privil&eacute;gios do funcionalismo p&uacute;blico brasileiro.
+    </p>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-icon red">&#128683;</div>
+            <h3>Teto Furado</h3>
+            <p>
+                O teto constitucional de R$ 44,4 mil (sal&aacute;rio de ministro do STF) &eacute;
+                sistematicamente violado por meio de benef&iacute;cios auxiliares: aux&iacute;lio-moradia,
+                alimenta&ccedil;&atilde;o, sa&uacute;de, transporte, gratifica&ccedil;&otilde;es e
+                &ldquo;penduricalhos&rdquo; que podem dobrar a remunera&ccedil;&atilde;o efetiva.
+            </p>
+        </div>
+        <div class="card">
+            <div class="card-icon yellow">&#128200;</div>
+            <h3>Abismo salarial: 13,2x</h3>
+            <p>
+                A mediana salarial do servidor p&uacute;blico federal &eacute; 13,2 vezes maior que a
+                mediana do setor privado. Para fun&ccedil;&otilde;es equivalentes, o setor p&uacute;blico
+                paga dramaticamente mais &mdash; criando uma &ldquo;aristocracia funcional&rdquo; bancada
+                pelo contribuinte.
+            </p>
+        </div>
+        <div class="card">
+            <div class="card-icon blue">&#128737;</div>
+            <h3>Blindagem total</h3>
+            <p>
+                Estabilidade absoluta ap&oacute;s 3 anos, sem avalia&ccedil;&atilde;o real de desempenho,
+                progress&atilde;o autom&aacute;tica por tempo de servi&ccedil;o, e demiss&atilde;o
+                praticamente imposs&iacute;vel mesmo em casos de incompet&ecirc;ncia flagrante.
+                Em 2023, menos de 0,01% dos servidores foram desligados por justa causa.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== COMPARA&Ccedil;&Atilde;O SALARIAL ==================== -->
+<section class="fade-in">
+    <div class="section-label">Compara&ccedil;&atilde;o salarial</div>
+    <h2>P&uacute;blico vs. Privado: mundos paralelos</h2>
+    <p class="subtitle">
+        A mesma pessoa, no mesmo pa&iacute;s, com o mesmo custo de vida &mdash; mas remunera&ccedil;&otilde;es de planetas diferentes.
+    </p>
+
+    <div class="wage-comparison">
+        <div class="wage-card bf">
+            <div class="wage-label">Servidor p&uacute;blico federal m&eacute;dio</div>
+            <div class="wage-amount">R$ 11.800/m&ecirc;s</div>
+            <div class="wage-items">
+                <div><span>Sal&aacute;rio base</span><span>R$ 8.500</span></div>
+                <div><span>Aux&iacute;lio-alimenta&ccedil;&atilde;o</span><span>R$ 1.000</span></div>
+                <div><span>Aux&iacute;lio-sa&uacute;de</span><span>R$ 500</span></div>
+                <div><span>Aux&iacute;lio-transporte</span><span>R$ 300</span></div>
+                <div><span>13&ordm; + f&eacute;rias (proporcional)</span><span>R$ 1.500</span></div>
+            </div>
+        </div>
+        <div class="wage-card work">
+            <div class="wage-label">Trabalhador privado mediana</div>
+            <div class="wage-amount">R$ 2.900/m&ecirc;s</div>
+            <div class="wage-items">
+                <div><span>Sal&aacute;rio bruto</span><span>R$ 2.900</span></div>
+                <div><span>INSS</span><span style="color: var(--accent-light);">-R$ 218</span></div>
+                <div><span>VT (desconto 6%)</span><span style="color: var(--accent-light);">-R$ 174</span></div>
+                <div><span>F&eacute;rias/13&ordm; proporcional</span><span>R$ 483</span></div>
+                <div><span>Sem aux&iacute;lios extras</span><span>R$ 0</span></div>
+            </div>
+        </div>
+    </div>
+    <div class="wage-result">
+        O servidor p&uacute;blico federal m&eacute;dio recebe <strong>4,1 vezes</strong> mais que o trabalhador mediano do setor privado.
+        Na mediana geral (incluindo estados e munic&iacute;pios), a diferen&ccedil;a chega a <strong>13,2x</strong>.
+    </div>
+</section>
+
+<!-- ==================== TETO FURADO ==================== -->
+<section class="fade-in">
+    <div class="section-label">Teto furado</div>
+    <h2>R$ 44,4 mil &eacute; s&oacute; o come&ccedil;o</h2>
+
+    <div class="highlight-box">
+        <h3>&#9888; O teto constitucional &eacute; uma fic&ccedil;&atilde;o</h3>
+        <p style="color: var(--text-secondary); margin-top: 0.5rem;">
+            A Constitui&ccedil;&atilde;o Federal estabelece que nenhum servidor p&uacute;blico pode receber mais
+            que um ministro do STF (R$ 44.451,92/m&ecirc;s em 2024). Por&eacute;m, benef&iacute;cios auxiliares
+            s&atilde;o exclu&iacute;dos do c&aacute;lculo do teto &mdash; permitindo que ju&iacute;zes, promotores
+            e procuradores recebam efetivamente <strong style="color: var(--accent-light);">R$ 80 mil a R$ 100 mil+
+            por m&ecirc;s</strong>, tudo dentro da &ldquo;legalidade&rdquo;.
+        </p>
+    </div>
+
+    <div class="teto-examples">
+        <div class="teto-card">
+            <div class="teto-value">R$ 4.377/m&ecirc;s</div>
+            <div class="teto-name">Aux&iacute;lio-moradia</div>
+            <div class="teto-desc">
+                Pago mesmo para quem tem casa pr&oacute;pria. Ju&iacute;zes e promotores recebem este valor sem comprova&ccedil;&atilde;o de gasto.
+            </div>
+        </div>
+        <div class="teto-card">
+            <div class="teto-value">R$ 1.000&ndash;2.000/m&ecirc;s</div>
+            <div class="teto-name">Aux&iacute;lio-alimenta&ccedil;&atilde;o</div>
+            <div class="teto-desc">
+                Valor que ultrapassa o sal&aacute;rio m&iacute;nimo de milhões de brasileiros. N&atilde;o &eacute; contabilizado no teto.
+            </div>
+        </div>
+        <div class="teto-card">
+            <div class="teto-value">R$ 500&ndash;1.000/m&ecirc;s</div>
+            <div class="teto-name">Aux&iacute;lio-sa&uacute;de</div>
+            <div class="teto-desc">
+                Plano de sa&uacute;de subsidiado al&eacute;m do benef&iacute;cio monet&aacute;rio direto. Tamb&eacute;m fora do teto.
+            </div>
+        </div>
+        <div class="teto-card">
+            <div class="teto-value">+50% a 100%</div>
+            <div class="teto-name">Gratifica&ccedil;&otilde;es e &ldquo;penduricalhos&rdquo;</div>
+            <div class="teto-desc">
+                Gratifica&ccedil;&otilde;es por produtividade, tempo de servi&ccedil;o, periculosidade, exerc&iacute;cio cumulativo &mdash; podem dobrar o sal&aacute;rio.
+            </div>
+        </div>
+        <div class="teto-card">
+            <div class="teto-value">R$ 100k&ndash;500k</div>
+            <div class="teto-name">Retroativos</div>
+            <div class="teto-desc">
+                Pagamentos retroativos de &ldquo;direitos atrasados&rdquo; em parcela &uacute;nica, gerando contracheques de centenas de milhares de reais.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== GR&Aacute;FICOS ==================== -->
+<section class="fade-in">
+    <div class="section-label">Visualiza&ccedil;&atilde;o de dados</div>
+    <h2>Os n&uacute;meros em gr&aacute;ficos</h2>
+
+    <div class="chart-container">
+        <div class="chart-title">Remunera&ccedil;&atilde;o m&eacute;dia mensal por poder</div>
+        <div class="chart-subtitle">Valores m&eacute;dios em R$ &mdash; inclui benef&iacute;cios auxiliares</div>
+        <canvas id="chart-poder"></canvas>
+    </div>
+
+    <div class="chart-grid" style="margin-top: 2rem;">
+        <div class="chart-container" style="margin-top: 0;">
+            <div class="chart-title">Crescimento da folha de pessoal da Uni&atilde;o</div>
+            <div class="chart-subtitle">Valores em R$ bilh&otilde;es &mdash; 2015 a 2024</div>
+            <canvas id="chart-folha"></canvas>
+        </div>
+        <div class="chart-container" style="margin-top: 0;">
+            <div class="chart-title">Brasil vs. Mundo: gasto com pessoal</div>
+            <div class="chart-subtitle">Percentual do PIB gasto com folha de pessoal p&uacute;blica</div>
+            <canvas id="chart-mundo"></canvas>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== CONTA MATEM&Aacute;TICA ==================== -->
+<section class="fade-in">
+    <div class="section-label">Fa&ccedil;a a conta</div>
+    <h2>A matem&aacute;tica da m&aacute;quina</h2>
+    <p class="subtitle">
+        Quanto custa manter a folha de pessoal do governo federal?
+    </p>
+
+    <div class="math-box">
+        <div class="equation">583.000 servidores ativos &times; R$ 11.800/m&ecirc;s = R$ 6,9 bi/m&ecirc;s</div>
+        <div class="explanation">Servidores federais civis ativos &mdash; sal&aacute;rio m&eacute;dio com benef&iacute;cios</div>
+
+        <div class="equation">+ 750.000 inativos e pensionistas &times; R$ 9.800/m&ecirc;s = R$ 7,4 bi/m&ecirc;s</div>
+        <div class="explanation">Aposentados e pensionistas do servi&ccedil;o p&uacute;blico federal</div>
+
+        <div class="equation">= ~R$ 14,3 bi/m&ecirc;s = R$ 170+ bi/ano</div>
+        <div class="explanation">Total apenas de servidores civis federais (ativos + inativos)</div>
+
+        <div class="math-total">
+            + militares, estados e munic&iacute;pios = <strong>R$ 365+ bilh&otilde;es/ano</strong>
+        </div>
+        <div class="explanation" style="margin-top: 0.5rem;">
+            O custo total da m&aacute;quina p&uacute;blica brasileira &mdash; maior que o or&ccedil;amento de sa&uacute;de e educa&ccedil;&atilde;o combinados.
+        </div>
+    </div>
+</section>
+
+<!-- ==================== FONTES ==================== -->
+<section class="fade-in">
+    <div class="section-label">Fontes e metodologia</div>
+    <h2>Verifique voc&ecirc; mesmo</h2>
+    <p class="subtitle">
+        Todos os dados utilizados nesta p&aacute;gina s&atilde;o p&uacute;blicos e verific&aacute;veis. Confira as fontes oficiais:
+    </p>
+
+    <ul class="source-list">
+        <li>
+            <span class="source-tag">Governo</span>
+            <a href="https://portaltransparencia.gov.br/servidores" target="_blank" rel="noopener">
+                Portal da Transpar&ecirc;ncia &mdash; Servidores Federais (portaltransparencia.gov.br/servidores)
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">Sistema</span>
+            <a href="https://www.gov.br/servidor" target="_blank" rel="noopener">
+                SIAPE &mdash; Sistema Integrado de Administra&ccedil;&atilde;o de Pessoal
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">Pesquisa</span>
+            <a href="https://www.ipea.gov.br/atlasestado" target="_blank" rel="noopener">
+                Atlas do Estado Brasileiro (IPEA) &mdash; ipea.gov.br/atlasestado
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">Governo</span>
+            <a href="https://painel.pep.planejamento.gov.br" target="_blank" rel="noopener">
+                Painel Estat&iacute;stico de Pessoal (PEP) &mdash; painel.pep.planejamento.gov.br
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">Dados</span>
+            <a href="https://www.gov.br/trabalho-e-emprego" target="_blank" rel="noopener">
+                RAIS &mdash; Rela&ccedil;&atilde;o Anual de Informa&ccedil;&otilde;es Sociais
+            </a>
+        </li>
+    </ul>
+</section>
+
+<footer>
+    <p><strong>Assistencial&atilde;o</strong> &mdash; Dados contra o imediatismo &mdash; 2025</p>
+    <p style="margin-top: 0.5rem; font-size: 0.75rem;">Plataforma independente. Dados do governo brasileiro.</p>
+    <p style="margin-top: 1rem; font-size: 0.8rem;">
+        <a href="/">Home</a> &bull; <a href="/bolsa-opio/">Bolsa &Oacute;pio</a> &bull;
+        <a href="/funcionalismao/">Funcionalismo</a> &bull; <a href="/judiciario/">Judiciari&atilde;o</a>
+    </p>
+</footer>
+
+<script>
+// ===== Chart 1: Remunera&ccedil;&atilde;o por Poder =====
+new Chart(document.getElementById('chart-poder'), {
+    type: 'bar',
+    data: {
+        labels: ['Executivo', 'Legislativo', 'Judici\u00e1rio', 'Minist\u00e9rio P\u00fablico', 'TCU/Tribunais'],
+        datasets: [{
+            label: 'Remunera\u00e7\u00e3o m\u00e9dia (R$)',
+            data: [8500, 12000, 18500, 16000, 15000],
+            backgroundColor: [
+                COLORS.blue,
+                COLORS.yellow,
+                COLORS.red,
+                COLORS.purple,
+                COLORS.blueLight
+            ],
+            borderRadius: 6,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return 'R$ ' + ctx.parsed.y.toLocaleString('pt-BR');
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { color: '#1e1e35' },
+                ticks: {
+                    callback: function(value) {
+                        return 'R$ ' + (value / 1000).toFixed(1) + 'k';
+                    }
+                }
+            },
+            x: {
+                grid: { display: false }
+            }
+        }
+    }
+});
+
+// ===== Chart 2: Crescimento da folha =====
+new Chart(document.getElementById('chart-folha'), {
+    type: 'line',
+    data: {
+        labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+        datasets: [{
+            label: 'Folha de pessoal (R$ bi)',
+            data: [252, 258, 265, 278, 290, 305, 318, 330, 350, 365],
+            borderColor: COLORS.red,
+            backgroundColor: 'rgba(230, 57, 70, 0.1)',
+            fill: true,
+            tension: 0.3,
+            pointBackgroundColor: COLORS.red,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return 'R$ ' + ctx.parsed.y + ' bi';
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: false,
+                grid: { color: '#1e1e35' },
+                ticks: {
+                    callback: function(value) {
+                        return 'R$ ' + value + ' bi';
+                    }
+                }
+            },
+            x: {
+                grid: { display: false }
+            }
+        }
+    }
+});
+
+// ===== Chart 3: Brasil vs. Mundo =====
+new Chart(document.getElementById('chart-mundo'), {
+    type: 'bar',
+    data: {
+        labels: ['Brasil', 'OCDE (m\u00e9dia)', 'Chile', 'Col\u00f4mbia', 'M\u00e9xico', 'Coreia do Sul'],
+        datasets: [{
+            label: '% do PIB',
+            data: [13.4, 9.9, 7.8, 7.2, 5.3, 4.5],
+            backgroundColor: [
+                COLORS.red,
+                COLORS.yellow,
+                COLORS.green,
+                COLORS.blue,
+                COLORS.blueLight,
+                COLORS.purple
+            ],
+            borderRadius: 6,
+            borderSkipped: false
+        }]
+    },
+    options: {
+        responsive: true,
+        indexAxis: 'y',
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return ctx.parsed.x + '% do PIB';
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                grid: { color: '#1e1e35' },
+                ticks: {
+                    callback: function(value) {
+                        return value + '%';
+                    }
+                }
+            },
+            y: {
+                grid: { display: false }
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>

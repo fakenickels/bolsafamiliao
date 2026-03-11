@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Judiciari&atilde;o &mdash; O judici&aacute;rio mais caro do planeta | Assistencial&atilde;o</title>
+    <meta property="og:title" content="Judiciari&atilde;o &mdash; O judici&aacute;rio mais caro do planeta">
+    <meta property="og:description" content="O Brasil gasta 1.3% do PIB com o Judici&aacute;rio. R$132 bi/ano. 60 dias de f&eacute;rias. 18+ tipos de penduricalhos. Dados do CNJ.">
+    <meta property="og:type" content="article">
+    <meta name="description" content="O judici&aacute;rio brasileiro &eacute; o mais caro do mundo per capita. Dados brutos do CNJ, Portal da Transpar&ecirc;ncia e compara&ccedil;&otilde;es internacionais.">
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="../shared.js"></script>
+    <style>
+        /* Judiciario page-specific styles */
+        .penduricalho-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .penduricalho-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .penduricalho-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(244, 162, 97, 0.5);
+        }
+        .penduricalho-item .pend-name {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+        }
+        .penduricalho-item .pend-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+        .teto-legend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .teto-legend .teto-line {
+            width: 30px;
+            height: 0;
+            border-top: 2px dashed var(--accent-light);
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <a href="/" class="logo">Assistencial&atilde;o</a>
+        <button class="nav-toggle" aria-label="Menu">&#9776;</button>
+        <ul class="nav-links">
+            <li><a href="/bolsa-opio/">Bolsa &Oacute;pio</a></li>
+            <li><a href="/funcionalismao/">Funcionalismão</a></li>
+            <li><a href="/judiciario/" class="active">Judiciari&atilde;o</a></li>
+            <li><span class="nav-disabled">Previdenci&aacute;ri&atilde;o</span></li>
+            <li><span class="nav-disabled">TCU &amp; &Oacute;rg&atilde;os</span></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section id="hero">
+    <div class="section-label">Judiciari&atilde;o &mdash; O poder sem controle</div>
+    <h1><span class="hero-highlight">Judiciari&atilde;o:</span> o judici&aacute;rio mais caro do planeta</h1>
+    <p class="subtitle">
+        O Brasil gasta 1,3% do PIB com o Poder Judici&aacute;rio &mdash; mais que qualquer outro pa&iacute;s do mundo.
+        S&atilde;o R$132 bilh&otilde;es por ano para manter 18 mil magistrados com 60 dias de f&eacute;rias,
+        18+ tipos de aux&iacute;lios e remunera&ccedil;&otilde;es que ignoram sistematicamente o teto constitucional.
+        O custo por habitante &eacute; 12x maior que a m&eacute;dia mundial.
+    </p>
+
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <div class="number">R$ 132 bi/ano</div>
+            <div class="label">Or&ccedil;amento total do Judici&aacute;rio (2024)</div>
+        </div>
+        <div class="hero-stat">
+            <div class="number">R$ 620/hab</div>
+            <div class="label">Custo por habitante (vs R$ 50 m&eacute;dia mundial)</div>
+        </div>
+        <div class="hero-stat">
+            <div class="number">60 dias</div>
+            <div class="label">F&eacute;rias anuais de ju&iacute;zes (vs 30 do trabalhador comum)</div>
+        </div>
+        <div class="hero-stat">
+            <div class="number">18.200+</div>
+            <div class="label">Magistrados no Brasil</div>
+        </div>
+    </div>
+
+    <div class="scroll-cta">
+        <span>&#8595;</span> Veja os dados completos
+    </div>
+</section>
+
+<!-- ==================== O PROBLEMA ==================== -->
+<section class="fade-in">
+    <div class="section-label">O Problema</div>
+    <h2>Tr&ecirc;s pilares do privil&eacute;gio judicial</h2>
+    <p class="subtitle">
+        O judici&aacute;rio brasileiro se blinda com regras pr&oacute;prias. O resultado: um sistema que custa
+        mais que toda a sa&uacute;de p&uacute;blica de muitos pa&iacute;ses.
+    </p>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-icon red">&#128176;</div>
+            <h3>R$ 50k+ sem extras</h3>
+            <p>
+                O subs&iacute;dio-base de um juiz federal &eacute; R$33.689. Mas com aux&iacute;lios, gratifica&ccedil;&otilde;es
+                e retroativos, a remunera&ccedil;&atilde;o efetiva ultrapassa R$50 mil &mdash; podendo chegar a R$100 mil+
+                em meses com acumulados. O teto constitucional de R$44,4 mil &eacute; sistematicamente ignorado
+                atrav&eacute;s de verbas de &ldquo;car&aacute;ter indenizat&oacute;rio&rdquo;.
+            </p>
+        </div>
+        <div class="card">
+            <div class="card-icon yellow">&#127958;</div>
+            <h3>60 dias de f&eacute;rias</h3>
+            <p>
+                Ju&iacute;zes t&ecirc;m 60 dias corridos de f&eacute;rias por ano &mdash; o dobro de qualquer trabalhador
+                brasileiro. Al&eacute;m disso, o Judici&aacute;rio entra em &ldquo;recesso&rdquo; em janeiro e julho,
+                per&iacute;odos em que a carga de trabalho cai drasticamente. Na pr&aacute;tica, muitos magistrados
+                trabalham efetivamente 9-10 meses por ano.
+            </p>
+        </div>
+        <div class="card">
+            <div class="card-icon blue">&#128209;</div>
+            <h3>Penduricalhos</h3>
+            <p>
+                S&atilde;o 18+ tipos de benef&iacute;cios que contornam o teto constitucional: aux&iacute;lio-moradia,
+                alimenta&ccedil;&atilde;o, sa&uacute;de, livro (!), creche, transporte, di&aacute;rias, gratifica&ccedil;&otilde;es
+                por ac&uacute;mulo, retroativos milion&aacute;rios. Todos classificados como &ldquo;indenizat&oacute;rios&rdquo;
+                para n&atilde;o contar no teto.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== COMPARATIVO SALARIAL ==================== -->
+<section class="fade-in">
+    <div class="section-label">Comparativo Salarial</div>
+    <h2>O contracheque de quem julga vs. quem paga</h2>
+
+    <div class="wage-comparison">
+        <div class="wage-card bf">
+            <div class="wage-label">Juiz Federal &mdash; Remunera&ccedil;&atilde;o efetiva</div>
+            <div class="wage-amount">R$ 62.500/m&ecirc;s</div>
+            <div class="wage-items">
+                <div><span>Subs&iacute;dio base</span><span>R$ 33.689</span></div>
+                <div><span>Aux&iacute;lio-moradia</span><span>R$ 4.377</span></div>
+                <div><span>Aux&iacute;lio-alimenta&ccedil;&atilde;o</span><span>R$ 1.500</span></div>
+                <div><span>Aux&iacute;lio-sa&uacute;de</span><span>R$ 1.200</span></div>
+                <div><span>Gratifica&ccedil;&atilde;o cumulativa</span><span>R$ 8.000</span></div>
+                <div><span>Aux&iacute;lio-livro (R$ 3.000/ano)</span><span>R$ 250</span></div>
+                <div><span>Retroativos (m&eacute;dia mensal)</span><span style="color: var(--accent-light);">R$ 13.484</span></div>
+            </div>
+        </div>
+        <div class="wage-card work">
+            <div class="wage-label">Brasileiro mediana</div>
+            <div class="wage-amount">R$ 2.900/m&ecirc;s</div>
+            <div class="wage-items">
+                <div><span>Sal&aacute;rio bruto</span><span>R$ 2.900</span></div>
+                <div><span>Renda real dispon&iacute;vel</span><span>~R$ 2.500</span></div>
+                <div><span>F&eacute;rias</span><span>30 dias</span></div>
+                <div><span>13&ordm; sal&aacute;rio</span><span>R$ 2.900</span></div>
+                <div><span>Aux&iacute;lio-moradia</span><span style="color: var(--text-muted);">R$ 0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wage-result">
+        Um juiz ganha o equivalente a <strong>21,5x o sal&aacute;rio mediano brasileiro</strong>
+    </div>
+</section>
+
+<!-- ==================== COMPARAÇÃO INTERNACIONAL ==================== -->
+<section class="fade-in">
+    <div class="section-label">Compara&ccedil;&atilde;o Internacional</div>
+    <h2>Brasil vs. o mundo: custo do Judici&aacute;rio</h2>
+    <p class="subtitle">
+        O Brasil gasta 4x mais (em % do PIB) que a m&eacute;dia de pa&iacute;ses desenvolvidos e paga
+        seus ju&iacute;zes 5,6x o PIB per capita &mdash; mais que qualquer democracia ocidental.
+    </p>
+
+    <div style="overflow-x: auto;">
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Pa&iacute;s</th>
+                    <th>Custo Judici&aacute;rio (% PIB)</th>
+                    <th>Custo per capita (USD)</th>
+                    <th>Sal&aacute;rio juiz / PIB per capita</th>
+                    <th>F&eacute;rias ju&iacute;zes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>&#127463;&#127479; Brasil</strong></td>
+                    <td><strong style="color: var(--accent-light);">1,3%</strong></td>
+                    <td>$120</td>
+                    <td><strong style="color: var(--accent-light);">5,6x</strong></td>
+                    <td><span class="badge badge-high">60 dias</span></td>
+                </tr>
+                <tr>
+                    <td>&#127465;&#127466; Alemanha</td>
+                    <td>0,3%</td>
+                    <td>$130</td>
+                    <td>1,3x</td>
+                    <td><span class="badge badge-low">30 dias</span></td>
+                </tr>
+                <tr>
+                    <td>&#127482;&#127480; EUA</td>
+                    <td>0,14%</td>
+                    <td>$90</td>
+                    <td>1,2x</td>
+                    <td><span class="badge badge-low">30 dias</span></td>
+                </tr>
+                <tr>
+                    <td>&#127467;&#127479; Fran&ccedil;a</td>
+                    <td>0,2%</td>
+                    <td>$75</td>
+                    <td>1,4x</td>
+                    <td><span class="badge badge-low">25 dias</span></td>
+                </tr>
+                <tr>
+                    <td>&#127464;&#127473; Chile</td>
+                    <td>0,3%</td>
+                    <td>$45</td>
+                    <td>2,1x</td>
+                    <td><span class="badge badge-mid">30 dias</span></td>
+                </tr>
+                <tr>
+                    <td>&#127471;&#127477; Jap&atilde;o</td>
+                    <td>0,3%</td>
+                    <td>$95</td>
+                    <td>1,1x</td>
+                    <td><span class="badge badge-low">20 dias</span></td>
+                </tr>
+                <tr>
+                    <td>&#127468;&#127463; Reino Unido</td>
+                    <td>0,3%</td>
+                    <td>$110</td>
+                    <td>1,5x</td>
+                    <td><span class="badge badge-low">30 dias</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ==================== PENDURICALHOS DETALHADOS ==================== -->
+<section class="fade-in">
+    <div class="section-label">Penduricalhos &mdash; O Detalhe</div>
+    <h2>Os 18+ benef&iacute;cios que furam o teto</h2>
+    <p class="subtitle">
+        Cada um &eacute; classificado como &ldquo;verba indenizat&oacute;ria&rdquo; e n&atilde;o entra no c&aacute;lculo
+        do teto constitucional de R$44,4 mil. Valores m&eacute;dios estimados por magistrado:
+    </p>
+
+    <div class="highlight-box">
+        <div class="penduricalho-grid">
+            <div class="penduricalho-item">
+                <div class="pend-name">Aux&iacute;lio-moradia</div>
+                <div class="pend-value">R$ 4.377</div>
+            </div>
+            <div class="penduricalho-item">
+                <div class="pend-name">Aux&iacute;lio-alimenta&ccedil;&atilde;o</div>
+                <div class="pend-value">R$ 1.500</div>
+            </div>
+            <div class="penduricalho-item">
+                <div class="pend-name">Aux&iacute;lio-sa&uacute;de</div>
+                <div class="pend-value">R$ 1.200</div>
+            </div>
+            <div class="penduricalho-item">
+                <div class="pend-name">Aux&iacute;lio-livro</div>
+                <div class="pend-value">R$ 250/m&ecirc;s</div>
+            </div>
+            <div class="penduricalho-item">
+                <div class="pend-name">Aux&iacute;lio-creche</div>
+                <div class="pend-value">R$ 700</div>
+            </div>
+            <div class="penduricalho-item">
+                <div class="pend-name">Gratifica&ccedil;&atilde;o por ac&uacute;mulo</div>
+                <div class="pend-value">R$ 8.000</div>
+            </div>
+            <div class="penduricalho-item">
+                <div class="pend-name">Indeniza&ccedil;&atilde;o por n&atilde;o uso de transporte oficial</div>
+                <div class="pend-value">R$ 1.000</div>
+            </div>
+            <div class="penduricalho-item">
+                <div class="pend-name">Di&aacute;rias (m&eacute;dia)</div>
+                <div class="pend-value">R$ 1.200</div>
+            </div>
+            <div class="penduricalho-item">
+                <div class="pend-name">Retroativos (m&eacute;dia mensal)</div>
+                <div class="pend-value">R$ 13.484</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== NEPOTISMO ==================== -->
+<section class="fade-in">
+    <div class="section-label">Nepotismo &amp; Hereditariedade</div>
+    <h2>O poder que se perpetua em fam&iacute;lia</h2>
+    <p class="subtitle">
+        Al&eacute;m dos sal&aacute;rios, o Judici&aacute;rio brasileiro tem uma tradi&ccedil;&atilde;o de
+        perpetua&ccedil;&atilde;o familiar que transforma cargos p&uacute;blicos em heran&ccedil;a.
+    </p>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-icon yellow">&#128220;</div>
+            <h3>Cart&oacute;rios</h3>
+            <p>
+                Cart&oacute;rios s&atilde;o &ldquo;serventias extrajudiciais&rdquo; que geram milh&otilde;es por ano
+                em taxas obrigat&oacute;rias. At&eacute; recentemente, essas posi&ccedil;&otilde;es eram literalmente
+                herdadas &mdash; passadas de pai para filho como propriedade privada. Mesmo ap&oacute;s a
+                obrigatoriedade de concurso, fam&iacute;lias tradicionais dominam o setor.
+            </p>
+        </div>
+        <div class="card">
+            <div class="card-icon red">&#128101;</div>
+            <h3>Nepotismo cruzado</h3>
+            <p>
+                &ldquo;Voc&ecirc; contrata meu parente, eu contrato o seu&rdquo; &mdash; o nepotismo cruzado &eacute;
+                a pr&aacute;tica sistem&aacute;tica de troca de favores entre desembargadores e ju&iacute;zes de
+                tribunais diferentes. Como a nomea&ccedil;&atilde;o &eacute; cruzada, tecnicamente n&atilde;o viola
+                a S&uacute;mula Vinculante 13 do STF que pro&iacute;be nepotismo direto.
+            </p>
+        </div>
+        <div class="card">
+            <div class="card-icon blue">&#127963;</div>
+            <h3>Tribunais de Justi&ccedil;a estaduais</h3>
+            <p>
+                Nos tribunais estaduais, as mesmas fam&iacute;lias ocupam cadeiras h&aacute; gera&ccedil;&otilde;es.
+                Filhos de desembargadores se tornam ju&iacute;zes, que se tornam desembargadores. Assessores s&atilde;o
+                parentes. Terceirizados s&atilde;o indicados. Uma aristocracia judici&aacute;ria com CPF e sobrenome.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== GRÁFICOS ==================== -->
+<section class="fade-in">
+    <div class="section-label">Visualiza&ccedil;&otilde;es</div>
+    <h2>Os n&uacute;meros em gr&aacute;fico</h2>
+
+    <!-- Chart 1: Custo do Judiciário % PIB -->
+    <div class="chart-container">
+        <div class="chart-title">Custo do Judici&aacute;rio: Brasil vs. Mundo (% do PIB)</div>
+        <div class="chart-subtitle">Fonte: CNJ &ldquo;Justi&ccedil;a em N&uacute;meros&rdquo; 2024 &amp; CEPEJ</div>
+        <canvas id="chart-custo-pib"></canvas>
+    </div>
+
+    <!-- Chart 2: Remuneração de magistrados -->
+    <div class="chart-container">
+        <div class="chart-title">Remunera&ccedil;&atilde;o efetiva mensal de magistrados (R$ mil)</div>
+        <div class="chart-subtitle">Inclui subs&iacute;dio + penduricalhos. Linha tracejada = teto constitucional (R$44,4 mil)</div>
+        <canvas id="chart-remuneracao"></canvas>
+        <div class="teto-legend">
+            <span class="teto-line"></span>
+            Teto constitucional: R$ 44.400 (Ministro STF)
+        </div>
+    </div>
+
+    <!-- Chart 3: Orçamento ao longo do tempo -->
+    <div class="chart-container">
+        <div class="chart-title">Or&ccedil;amento do Judici&aacute;rio (R$ bi)</div>
+        <div class="chart-subtitle">Evolu&ccedil;&atilde;o 2015&ndash;2024 &mdash; valores nominais</div>
+        <canvas id="chart-orcamento"></canvas>
+    </div>
+</section>
+
+<!-- ==================== MATH BOX ==================== -->
+<section class="fade-in">
+    <div class="section-label">A Conta</div>
+    <h2>De onde v&ecirc;m os R$132 bilh&otilde;es</h2>
+
+    <div class="math-box">
+        <div class="equation">18.200 magistrados &times; R$ 62.500/m&ecirc;s = R$ 1,14 bi/m&ecirc;s</div>
+        <div class="explanation">Remunera&ccedil;&atilde;o efetiva m&eacute;dia (subs&iacute;dio + penduricalhos) dos magistrados ativos</div>
+
+        <div class="equation" style="margin-top: 1.5rem;">278.000 servidores &times; R$ 14.000/m&ecirc;s = R$ 3,9 bi/m&ecirc;s</div>
+        <div class="explanation">Servidores do Judici&aacute;rio (analistas, t&eacute;cnicos, oficiais de justi&ccedil;a, etc.)</div>
+
+        <div class="equation" style="margin-top: 1.5rem;">Total pessoal: ~R$ 5 bi/m&ecirc;s = R$ 60 bi/ano</div>
+        <div class="explanation">Somente folha de pagamento de pessoal ativo</div>
+
+        <div class="equation" style="margin-top: 1.5rem; font-size: 1.3rem;">+ custeio + investimentos + inativos = <strong>R$ 132 bi/ano</strong></div>
+        <div class="explanation">Or&ccedil;amento total aprovado para o Poder Judici&aacute;rio em 2024</div>
+    </div>
+</section>
+
+<!-- ==================== FONTES ==================== -->
+<section class="fade-in">
+    <div class="section-label">Fontes &amp; Dados Brutos</div>
+    <h2>Verifique voc&ecirc; mesmo</h2>
+    <p class="subtitle">
+        Todos os dados desta p&aacute;gina s&atilde;o p&uacute;blicos e verific&aacute;veis.
+        Se encontrar algum erro, nos avise &mdash; verdade &gt; narrativa.
+    </p>
+
+    <ul class="source-list">
+        <li>
+            <span class="source-tag">CNJ</span>
+            <a href="https://www.cnj.jus.br/pesquisas-judiciarias/justica-em-numeros/" target="_blank" rel="noopener">
+                Justi&ccedil;a em N&uacute;meros &mdash; Relat&oacute;rio anual do Conselho Nacional de Justi&ccedil;a
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">Transpar&ecirc;ncia</span>
+            <a href="https://portaldatransparencia.gov.br/servidores" target="_blank" rel="noopener">
+                Portal da Transpar&ecirc;ncia &mdash; Servidores do Judici&aacute;rio
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">SIAPE</span>
+            <a href="https://portaldatransparencia.gov.br/" target="_blank" rel="noopener">
+                SIAPE &mdash; Dados de pessoal do Judici&aacute;rio (via Portal da Transpar&ecirc;ncia)
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">CNJ</span>
+            <a href="https://www.cnj.jus.br/transparencia/remuneracao-dos-magistrados/" target="_blank" rel="noopener">
+                Conselho Nacional de Justi&ccedil;a &mdash; Remunera&ccedil;&atilde;o de Magistrados
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">CEPEJ</span>
+            <a href="https://www.coe.int/en/web/cepej" target="_blank" rel="noopener">
+                CEPEJ (European Commission for the Efficiency of Justice) &mdash; Compara&ccedil;&atilde;o internacional
+            </a>
+        </li>
+    </ul>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer>
+    <p><strong>Assistencial&atilde;o</strong> &mdash; Dados contra o imediatismo &mdash; 2025</p>
+    <p style="margin-top: 0.5rem; font-size: 0.75rem;">
+        Plataforma independente. Dados do governo brasileiro. C&oacute;digo aberto.
+    </p>
+    <p style="margin-top: 1rem; font-size: 0.8rem;">
+        <a href="/">Home</a> &nbsp;&bull;&nbsp;
+        <a href="/bolsa-opio/">Bolsa &Oacute;pio</a> &nbsp;&bull;&nbsp;
+        <a href="/funcionalismao/">Funcionalismão</a> &nbsp;&bull;&nbsp;
+        <a href="/judiciario/">Judiciari&atilde;o</a>
+    </p>
+</footer>
+
+<!-- ==================== CHARTS SCRIPT ==================== -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ====== Chart 1: Custo do Judiciário % PIB (horizontal bar) ======
+    var ctxCustoPib = document.getElementById('chart-custo-pib').getContext('2d');
+    new Chart(ctxCustoPib, {
+        type: 'bar',
+        data: {
+            labels: ['Brasil', 'Alemanha', 'EUA', 'Fran\u00e7a', 'It\u00e1lia', 'Chile', 'Jap\u00e3o', 'Reino Unido'],
+            datasets: [{
+                label: '% do PIB',
+                data: [1.3, 0.32, 0.14, 0.19, 0.28, 0.32, 0.32, 0.33],
+                backgroundColor: [
+                    COLORS.red,
+                    COLORS.blue,
+                    COLORS.blue,
+                    COLORS.blue,
+                    COLORS.blue,
+                    COLORS.yellow,
+                    COLORS.blue,
+                    COLORS.blue
+                ],
+                borderRadius: 4,
+                barThickness: 28
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) { return ctx.parsed.x + '% do PIB'; }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    max: 1.5,
+                    grid: { color: 'rgba(42,42,64,0.5)' },
+                    ticks: {
+                        callback: function(v) { return v + '%'; }
+                    }
+                },
+                y: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // ====== Chart 2: Remuneração efetiva de magistrados (vertical bar + teto line) ======
+    var ctxRemuneracao = document.getElementById('chart-remuneracao').getContext('2d');
+
+    var tetoPlugin = {
+        id: 'tetoLine',
+        afterDraw: function(chart) {
+            var yScale = chart.scales.y;
+            var tetoValue = 44.4;
+            var yPixel = yScale.getPixelForValue(tetoValue);
+            var ctx = chart.ctx;
+            var chartArea = chart.chartArea;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.setLineDash([8, 6]);
+            ctx.strokeStyle = COLORS.redLight;
+            ctx.lineWidth = 2;
+            ctx.moveTo(chartArea.left, yPixel);
+            ctx.lineTo(chartArea.right, yPixel);
+            ctx.stroke();
+
+            ctx.fillStyle = COLORS.redLight;
+            ctx.font = '11px "Segoe UI", sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText('Teto R$ 44,4 mil', chartArea.right, yPixel - 6);
+            ctx.restore();
+        }
+    };
+
+    new Chart(ctxRemuneracao, {
+        type: 'bar',
+        data: {
+            labels: ['Juiz Substituto', 'Juiz Federal', 'Desembargador', 'Ministro STJ', 'Ministro STF'],
+            datasets: [{
+                label: 'R$ mil/m\u00eas',
+                data: [35, 50, 55, 62, 65],
+                backgroundColor: [
+                    COLORS.yellow,
+                    COLORS.yellow,
+                    COLORS.red,
+                    COLORS.red,
+                    COLORS.red
+                ],
+                borderRadius: 6,
+                barThickness: 48
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) { return 'R$ ' + ctx.parsed.y + ' mil/m\u00eas'; }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 75,
+                    grid: { color: 'rgba(42,42,64,0.5)' },
+                    ticks: {
+                        callback: function(v) { return 'R$ ' + v + 'k'; }
+                    }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        },
+        plugins: [tetoPlugin]
+    });
+
+    // ====== Chart 3: Orçamento do Judiciário ao longo do tempo (line) ======
+    var ctxOrcamento = document.getElementById('chart-orcamento').getContext('2d');
+    new Chart(ctxOrcamento, {
+        type: 'line',
+        data: {
+            labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+            datasets: [{
+                label: 'R$ bilh\u00f5es',
+                data: [79, 84, 90, 95, 100, 104, 110, 116, 124, 132],
+                borderColor: COLORS.red,
+                backgroundColor: 'rgba(230, 57, 70, 0.1)',
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: COLORS.red,
+                pointBorderColor: COLORS.red,
+                pointRadius: 5,
+                pointHoverRadius: 8,
+                borderWidth: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) { return 'R$ ' + ctx.parsed.y + ' bilh\u00f5es'; }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 60,
+                    max: 150,
+                    grid: { color: 'rgba(42,42,64,0.5)' },
+                    ticks: {
+                        callback: function(v) { return 'R$ ' + v + ' bi'; }
+                    }
+                },
+                x: {
+                    grid: { color: 'rgba(42,42,64,0.3)' }
+                }
+            }
+        }
+    });
+
+});
+</script>
+
+</body>
+</html>
