@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bolsa Família e o Emprego Formal - Uma Análise por Dados</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a2e;
+            --bg-card-hover: #1e1e35;
+            --accent: #e63946;
+            --accent-light: #ff6b6b;
+            --accent-green: #2ec4b6;
+            --accent-yellow: #f4a261;
+            --accent-blue: #457b9d;
+            --text-primary: #e8e8f0;
+            --text-secondary: #a0a0b8;
+            --text-muted: #6b6b85;
+            --border: #2a2a40;
+            --gradient-1: linear-gradient(135deg, #e63946 0%, #f4a261 100%);
+            --gradient-2: linear-gradient(135deg, #457b9d 0%, #2ec4b6 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+
+        nav .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.3s;
+            letter-spacing: 0.02em;
+        }
+
+        nav .nav-links a:hover {
+            color: var(--accent-light);
+        }
+
+        /* Sections */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.8;
+        }
+
+        /* Hero */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 80px;
+            position: relative;
+        }
+
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -20%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(ellipse, rgba(230, 57, 70, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-highlight {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .hero-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .hero-stat:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .hero-stat .number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-stat .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(230, 57, 70, 0.4);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon.red { background: rgba(230, 57, 70, 0.15); }
+        .card-icon.green { background: rgba(46, 196, 182, 0.15); }
+        .card-icon.yellow { background: rgba(244, 162, 97, 0.15); }
+        .card-icon.blue { background: rgba(69, 123, 157, 0.15); }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin-top: 3rem;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent), var(--accent-yellow), var(--accent));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2.5rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 3px solid var(--bg-primary);
+            transform: translateX(-5px);
+        }
+
+        .timeline-year {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .timeline-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0.25rem 0;
+        }
+
+        .timeline-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .timeline-value {
+            display: inline-block;
+            background: rgba(230, 57, 70, 0.15);
+            color: var(--accent-light);
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Chart container */
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            position: relative;
+        }
+
+        .chart-container canvas {
+            max-height: 400px;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .chart-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Comparison table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th {
+            text-align: left;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--accent);
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .comparison-table td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .comparison-table tr:hover td {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-high { background: rgba(230, 57, 70, 0.2); color: var(--accent-light); }
+        .badge-low { background: rgba(46, 196, 182, 0.2); color: var(--accent-green); }
+        .badge-mid { background: rgba(244, 162, 97, 0.2); color: var(--accent-yellow); }
+
+        /* Math box */
+        .math-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            border-radius: 0 12px 12px 0;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .math-box .equation {
+            font-size: 1.1rem;
+            color: var(--accent-light);
+            margin: 0.75rem 0;
+        }
+
+        .math-box .explanation {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-family: 'Segoe UI', sans-serif;
+            margin-top: 0.25rem;
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(230, 57, 70, 0.1), rgba(244, 162, 97, 0.05));
+            border: 1px solid rgba(230, 57, 70, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .highlight-box.green {
+            background: linear-gradient(135deg, rgba(46, 196, 182, 0.1), rgba(69, 123, 157, 0.05));
+            border-color: rgba(46, 196, 182, 0.3);
+        }
+
+        /* Methodology */
+        .method-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .method-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .method-step .step-num {
+            position: absolute;
+            top: -12px;
+            left: 1rem;
+            background: var(--accent);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Sources */
+        .source-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .source-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .source-list li .source-tag {
+            flex-shrink: 0;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(69, 123, 157, 0.2);
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .source-list li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .source-list li a:hover {
+            color: var(--accent-light);
+        }
+
+        /* Divider */
+        .divider {
+            border: none;
+            height: 1px;
+            background: var(--border);
+            margin: 4rem 0;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Scroll animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            section { padding: 4rem 1.25rem; }
+            nav .nav-links { display: none; }
+            .hero-stats { grid-template-columns: 1fr 1fr; }
+            .card-grid { grid-template-columns: 1fr; }
+            .comparison-table { font-size: 0.8rem; }
+            .comparison-table th, .comparison-table td { padding: 0.6rem 0.5rem; }
+        }
+
+        /* Wage comparison visual */
+        .wage-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .wage-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .wage-card.bf {
+            border-color: rgba(230, 57, 70, 0.4);
+        }
+
+        .wage-card.work {
+            border-color: rgba(46, 196, 182, 0.4);
+        }
+
+        .wage-card .wage-amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 1rem 0;
+        }
+
+        .wage-card.bf .wage-amount {
+            color: var(--accent-light);
+        }
+
+        .wage-card.work .wage-amount {
+            color: var(--accent-green);
+        }
+
+        .wage-card .wage-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .wage-card .wage-detail {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .wage-card .wage-items {
+            text-align: left;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .wage-card .wage-items div {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .wage-result {
+            text-align: center;
+            margin: 1rem 0 2rem;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .wage-result strong {
+            color: var(--accent-light);
+        }
+
+        @media (max-width: 768px) {
+            .wage-comparison { grid-template-columns: 1fr; }
+        }
+
+        .scroll-cta {
+            margin-top: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <div class="logo">BF &times; Emprego</div>
+        <ul class="nav-links">
+            <li><a href="#hero">Tese</a></li>
+            <li><a href="#timeline">Linha do Tempo</a></li>
+            <li><a href="#mechanism">Mecanismo</a></li>
+            <li><a href="#informality">Informalidade</a></li>
+            <li><a href="#data">Dados</a></li>
+            <li><a href="#cities">Cidades</a></li>
+            <li><a href="#multiplier">Mito 1.78x</a></li>
+            <li><a href="#streets">Rua</a></li>
+            <li><a href="#methodology">Metodologia</a></li>
+            <li><a href="#proposal">Proposta</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<section id="hero">
+    <div class="section-label">Análise baseada em dados</div>
+    <h1>O novo Bolsa Família <span class="hero-highlight">destruiu o emprego formal?</span></h1>
+    <p class="subtitle">
+        Uma investigação empírica comparando cidades semelhantes para medir o impacto
+        da expansão do programa na participação do mercado de trabalho formal.
+    </p>
+
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <div class="number">21,5 mi</div>
+            <div class="label">Famílias beneficiárias (2024)</div>
+        </div>
+        <div class="hero-stat">
+            <div class="number">R$ 681</div>
+            <div class="label">Benefício médio por família</div>
+        </div>
+        <div class="hero-stat">
+            <div class="number">R$ 14,2 bi</div>
+            <div class="label">Gasto mensal do programa</div>
+        </div>
+        <div class="hero-stat">
+            <div class="number">~36%</div>
+            <div class="label">da população no CadÚnico</div>
+        </div>
+    </div>
+
+    <div class="scroll-cta">
+        <span>&#8595;</span> Role para explorar os dados
+    </div>
+</section>
+
+<!-- ==================== THESIS ==================== -->
+<section id="thesis" class="fade-in">
+    <div class="section-label">A Tese</div>
+    <h2>De programa para crianças a renda universal de fato</h2>
+    <p class="subtitle" style="margin-bottom: 2rem;">
+        O Bolsa Família original (2003) era um programa de transferência condicional focado em crianças:
+        exigia frequência escolar e vacinação. O modelo atual se transformou em uma transferência
+        de renda quase incondicional para adultos em idade produtiva, criando uma armadilha
+        de informalidade.
+    </p>
+
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-icon red">&#9888;</div>
+            <h3>Valor muito alto relativo ao salário</h3>
+            <p>Com R$600 de piso + adicionais por filho, uma família pode receber R$900-1.200/mês sem trabalhar.
+               O salário mínimo líquido de um emprego formal é ~R$1.250 após descontos.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon yellow">&#128200;</div>
+            <h3>Adultos funcionais como foco</h3>
+            <p>O modelo original condicionava o benefício à criança. Hoje, o adulto titular
+               é o principal beneficiário de fato, sem condicionalidade de trabalho ou qualificação.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon blue">&#128736;</div>
+            <h3>Custo de oportunidade formal</h3>
+            <p>Aceitar emprego formal significa perder o BF, pagar transporte, alimentação,
+               e ter horário fixo. O ganho líquido pode ser inferior a R$400/mês.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== TIMELINE ==================== -->
+<section id="timeline" class="fade-in">
+    <div class="section-label">Evolução</div>
+    <h2>A transformação do programa</h2>
+    <p class="subtitle" style="margin-bottom: 1rem;">
+        Do foco em crianças à transferência de renda para adultos: como o programa mudou em 20 anos.
+    </p>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-year">2003 - Criação</div>
+            <div class="timeline-title">Bolsa Família Original (Lula I)</div>
+            <div class="timeline-desc">Unificação de programas (Bolsa Escola, Bolsa Alimentação, Cartão Alimentação).
+                Foco em crianças e gestantes. Condicionalidades rígidas: frequência escolar, vacinação.</div>
+            <div class="timeline-value">~R$95/família &bull; 3,6 mi famílias</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">2003-2018 - Consolidação</div>
+            <div class="timeline-title">Expansão gradual com condicionalidades</div>
+            <div class="timeline-desc">Programa cresce organicamente. Valores reajustados com parcimônia.
+                Condicionalidades mantidas. Foco claro em combate à pobreza intergeracional via educação.</div>
+            <div class="timeline-value">~R$190/família &bull; 13,8 mi famílias</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">Nov 2021 - Ruptura</div>
+            <div class="timeline-title">Auxílio Brasil (Bolsonaro)</div>
+            <div class="timeline-desc">Piso de R$400. Mudança de paradigma: valor sobe 110% de uma vez.
+                Cria expectativa de "renda mínima" em vez de apoio focado. Contexto eleitoral.</div>
+            <div class="timeline-value">R$400/família &bull; 21,6 mi famílias</div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-year">Mar 2023 - Expansão Máxima</div>
+            <div class="timeline-title">Novo Bolsa Família (Lula III)</div>
+            <div class="timeline-desc">Piso de R$600 + R$150/criança (0-6 anos) + R$50 por dependente (7-17).
+                Condicionalidades relaxadas na prática. Adulto sem filhos pode receber. Critério de renda ampliado.</div>
+            <div class="timeline-value">R$681 médio &bull; 21,2 mi famílias</div>
+        </div>
+    </div>
+
+    <div class="chart-container" style="margin-top: 3rem;">
+        <div class="chart-title">Valor real do benefício vs. Salário Mínimo Líquido</div>
+        <div class="chart-subtitle">Valores em R$ correntes. O benefício médio se aproximou perigosamente do salário mínimo líquido.</div>
+        <canvas id="chart-benefit-vs-wage"></canvas>
+    </div>
+</section>
+
+<!-- ==================== MECHANISM ==================== -->
+<section id="mechanism" class="fade-in">
+    <div class="section-label">O Mecanismo</div>
+    <h2>O salário de reserva e a armadilha da informalidade</h2>
+    <p class="subtitle" style="margin-bottom: 2rem;">
+        Em economia, o <strong>salário de reserva</strong> é o valor mínimo que uma pessoa aceita para trabalhar.
+        Quando o benefício social se aproxima desse valor, a pessoa racionalmente escolhe não trabalhar formalmente.
+    </p>
+
+    <div class="wage-comparison">
+        <div class="wage-card bf">
+            <div class="wage-label">Ficar em casa com Bolsa Família</div>
+            <div class="wage-amount">R$ 881</div>
+            <div class="wage-detail">Família com 1 criança pequena e 1 adolescente</div>
+            <div class="wage-items">
+                <div><span>Piso BF</span><span>R$ 600</span></div>
+                <div><span>Adicional criança (0-6)</span><span>R$ 150</span></div>
+                <div><span>Adicional adolescente (7-17)</span><span>R$ 50</span></div>
+                <div><span>Trabalho informal eventual</span><span>~R$ 81</span></div>
+                <div><span>Custo de transporte</span><span>R$ 0</span></div>
+                <div><span>Custo alimentação fora</span><span>R$ 0</span></div>
+                <div style="border-bottom: 2px solid var(--accent);"><strong>Renda disponível</strong><strong style="color:var(--accent-light)">R$ 881</strong></div>
+            </div>
+        </div>
+
+        <div class="wage-card work">
+            <div class="wage-label">Trabalhar com carteira assinada</div>
+            <div class="wage-amount">R$ 971</div>
+            <div class="wage-detail">Salário mínimo (R$ 1.518 em 2025) após custos</div>
+            <div class="wage-items">
+                <div><span>Salário bruto</span><span>R$ 1.518</span></div>
+                <div><span>INSS (7,5%)</span><span>- R$ 114</span></div>
+                <div><span>Vale-transporte (6%)</span><span>- R$ 91</span></div>
+                <div><span>Alimentação extra</span><span>- R$ 150</span></div>
+                <div><span>Creche / cuidado filho</span><span>- R$ 192</span></div>
+                <div><span>Perda Bolsa Família</span><span>- R$ 800</span></div>
+                <div><span style="font-size:0.75rem;color:var(--text-muted)">Regra: perde após 2 anos com renda acima do limite</span><span></span></div>
+                <div style="border-bottom: 2px solid var(--accent-green);"><strong>Renda disponível</strong><strong style="color:var(--accent-green)">R$ 971</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wage-result">
+        Ganho líquido por aceitar emprego formal: <strong>apenas R$ 90/mês</strong><br>
+        <span style="font-size:0.9rem;color:var(--text-muted)">Para trabalhar 44 horas/semana, com deslocamento, horário fixo, e perda de flexibilidade</span>
+    </div>
+
+    <div class="math-box">
+        <div style="font-family: sans-serif; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">O Cálculo da Decisão Racional</div>
+        <div class="equation">Utilidade(Trabalho) = Salário_líquido - Custos - Perda_BF + Valor(Tempo_livre) × (-1)</div>
+        <div class="explanation">Se Utilidade(Trabalho) &lt; Utilidade(BF + Informal), o agente racional não aceita emprego formal.</div>
+        <div class="equation" style="margin-top: 1rem;">R$ 971 - R$ 881 = R$ 90/mês de ganho</div>
+        <div class="explanation">Trabalhando ~176 horas/mês a mais para ganhar R$ 90 = R$ 0,51/hora de incentivo líquido.</div>
+    </div>
+
+    <div class="highlight-box">
+        <h3>&#9888; A armadilha é pior para quem mais precisa</h3>
+        <p style="color:var(--text-secondary); margin-top: 0.5rem;">
+            Famílias maiores recebem mais do BF. Uma mãe solo com 3 filhos pode receber
+            R$950+/mês do programa. O emprego formal de salário mínimo sequer cobre os custos adicionais
+            de transporte, alimentação e cuidado infantil. <strong>O sistema prende as pessoas
+            mais vulneráveis na dependência.</strong>
+        </p>
+    </div>
+</section>
+
+<!-- ==================== INFORMALITY & SOCIAL SECURITY ==================== -->
+<section id="informality" class="fade-in">
+    <div class="section-label">O Efeito Cascata</div>
+    <h2>Pessoas pedem para <span style="color: var(--accent-light);">NÃO assinar a carteira</span></h2>
+    <p class="subtitle" style="margin-bottom: 2rem;">
+        Um fenômeno crescente e perverso: trabalhadores pedem ativamente para trabalhar na informalidade
+        para não perder o Bolsa Família. Isso destrói não só o mercado de trabalho, mas a
+        <strong>Previdência Social</strong> e todo o sistema de seguridade.
+    </p>
+
+    <div class="card-grid">
+        <div class="card" style="border-top: 3px solid var(--accent);">
+            <div class="card-icon red">&#128101;</div>
+            <h3>"Não assina minha carteira, por favor"</h3>
+            <p>Trabalhadores que poderiam ser formalizados pedem explicitamente ao empregador para
+               receber por fora. O motivo é simples: a carteira assinada entra no CadÚnico e eles
+               perdem o BF. O ganho líquido não compensa.</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent-yellow);">
+            <div class="card-icon yellow">&#9888;</div>
+            <h3>Empregador vira cúmplice</h3>
+            <p>O empregador também se beneficia: não paga INSS patronal (~28%), FGTS (8%), nem
+               férias/13o. Cria-se uma aliança perversa onde ambos ganham no curto prazo
+               e a sociedade perde.</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent-blue);">
+            <div class="card-icon blue">&#128176;</div>
+            <h3>Previdência em colapso</h3>
+            <p>Menos contribuintes formais = menos arrecadação para INSS.
+               Déficit previdenciário cresce. Ironia: os mesmos informais de hoje
+               vão depender de BPC (benefício assistencial) amanhã, perpetuando o ciclo.</p>
+        </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 2rem;">
+        <h3>&#128200; O círculo vicioso da informalidade</h3>
+        <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; text-align: center;">
+            <div style="background: var(--bg-card); padding: 1rem 1.5rem; border-radius: 10px; border: 1px solid var(--accent); min-width: 180px;">
+                <div style="font-weight: 700; color: var(--accent-light);">BF alto demais</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">R$600-1.200/família</div>
+            </div>
+            <div style="font-size: 1.5rem; color: var(--text-muted);">&rarr;</div>
+            <div style="background: var(--bg-card); padding: 1rem 1.5rem; border-radius: 10px; border: 1px solid var(--accent-yellow); min-width: 180px;">
+                <div style="font-weight: 700; color: var(--accent-yellow);">Recusa carteira</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Trabalhador pede informal</div>
+            </div>
+            <div style="font-size: 1.5rem; color: var(--text-muted);">&rarr;</div>
+            <div style="background: var(--bg-card); padding: 1rem 1.5rem; border-radius: 10px; border: 1px solid var(--accent-blue); min-width: 180px;">
+                <div style="font-weight: 700; color: var(--accent-blue);">Menos INSS</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Arrecadação previdenciária cai</div>
+            </div>
+            <div style="font-size: 1.5rem; color: var(--text-muted);">&rarr;</div>
+            <div style="background: var(--bg-card); padding: 1rem 1.5rem; border-radius: 10px; border: 1px solid var(--accent-green); min-width: 180px;">
+                <div style="font-weight: 700; color: var(--accent-green);">Mais déficit</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Governo gasta mais com assistência</div>
+            </div>
+            <div style="font-size: 1.5rem; color: var(--text-muted);">&rarr;</div>
+            <div style="background: var(--bg-card); padding: 1rem 1.5rem; border-radius: 10px; border: 1px solid var(--accent); min-width: 180px;">
+                <div style="font-weight: 700; color: var(--accent-light);">Mais BF / BPC</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">Ciclo se repete</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-grid" style="margin-top: 2rem;">
+        <div class="chart-container" style="margin-top: 0;">
+            <div class="chart-title">Taxa de Informalidade (% dos ocupados)</div>
+            <div class="chart-subtitle">PNAD Contínua - Trabalhadores sem carteira assinada + conta própria sem CNPJ. Fonte: IBGE/SIDRA tabela 4093.</div>
+            <canvas id="chart-informality"></canvas>
+        </div>
+        <div class="chart-container" style="margin-top: 0;">
+            <div class="chart-title">Arrecadação INSS vs. Despesa Previdenciária</div>
+            <div class="chart-subtitle">Valores em R$ bilhões. A tesoura se abre: menos gente contribui, mais gente depende. Fonte: RGPS/Secretaria de Previdência.</div>
+            <canvas id="chart-inss"></canvas>
+        </div>
+    </div>
+
+    <div class="math-box" style="margin-top: 2rem;">
+        <div style="font-family: sans-serif; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Impacto na Previdência: Conta do Guardanapo</div>
+        <div class="equation">21 mi famílias &times; ~1.5 adultos = ~31 mi adultos no BF</div>
+        <div class="explanation">Se metade poderia estar formal mas não está por desincentivo do BF:</div>
+        <div class="equation">~15 mi contribuintes a menos &times; R$ 114/mês (INSS mínimo) = R$ 1,7 bi/mês perdido</div>
+        <div class="explanation">= R$ 20 bilhões/ano a menos na Previdência Social</div>
+        <div class="equation" style="margin-top: 1rem;">Custo BF: ~R$ 170 bi/ano + Perda INSS: ~R$ 20 bi/ano = R$ 190 bi/ano de custo total</div>
+        <div class="explanation" style="color: var(--accent-light);">Sem contar FGTS perdido (~R$ 8 bi/ano), IRPF perdido, e futura demanda por BPC.</div>
+    </div>
+
+    <div class="highlight-box green" style="margin-top: 2rem;">
+        <h3>&#128202; Como medir isso nos dados</h3>
+        <p style="color:var(--text-secondary); margin-top: 0.5rem;">
+            <strong>1. Taxa de informalidade por município</strong> (PNAD Contínua / Censo 2022) correlacionada com penetração de BF.<br>
+            <strong>2. Arrecadação do INSS por município</strong> (dados do RGPS via Portal da Transparência) vs. beneficiários de BF.<br>
+            <strong>3. Razão empregados com carteira / total de ocupados</strong> - comparar municípios pareados com alta vs. baixa penetração BF.<br>
+            <strong>4. RAIS</strong> (Relação Anual de Informações Sociais) - dados de estoque de emprego formal por município, setor e faixa salarial.
+        </p>
+    </div>
+</section>
+
+<!-- ==================== DATA ==================== -->
+<section id="data" class="fade-in">
+    <div class="section-label">Os Dados</div>
+    <h2>Correlação entre BF e emprego formal nos municípios</h2>
+    <p class="subtitle" style="margin-bottom: 1rem;">
+        Análise de dados públicos do Novo CAGED e Portal da Transparência para municípios brasileiros.
+    </p>
+
+    <div class="chart-container">
+        <div class="chart-title">Beneficiários BF (% da população) vs. Taxa de Emprego Formal</div>
+        <div class="chart-subtitle">Cada ponto é um município. Dados ilustrativos baseados em médias regionais do IBGE/CAGED/MDS (2024). Pesquisa completa requer cruzamento municipal.</div>
+        <canvas id="chart-scatter"></canvas>
+    </div>
+
+    <div class="card-grid" style="margin-top: 2rem;">
+        <div class="chart-container" style="margin-top: 0;">
+            <div class="chart-title">Saldo CAGED acumulado 12 meses</div>
+            <div class="chart-subtitle">Criação líquida de empregos formais (milhares). Fonte: Novo CAGED.</div>
+            <canvas id="chart-caged"></canvas>
+        </div>
+        <div class="chart-container" style="margin-top: 0;">
+            <div class="chart-title">Famílias no Bolsa Família (milhões)</div>
+            <div class="chart-subtitle">Evolução do total de famílias beneficiárias. Fonte: MDS/Portal Transparência.</div>
+            <canvas id="chart-beneficiaries"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <div class="chart-title">Taxa de Participação na Força de Trabalho (%) - PNAD Contínua</div>
+        <div class="chart-subtitle">Percentual da população em idade ativa no mercado de trabalho (formal + informal + buscando emprego). A queda pós-2020 não se recuperou totalmente.</div>
+        <canvas id="chart-participation"></canvas>
+    </div>
+</section>
+
+<!-- ==================== CITY COMPARISON ==================== -->
+<section id="cities" class="fade-in">
+    <div class="section-label">Comparação de Cidades</div>
+    <h2>Cidades semelhantes, resultados diferentes</h2>
+    <p class="subtitle" style="margin-bottom: 1rem;">
+        Metodologia: pares de municípios com perfil demográfico e econômico similar,
+        mas com taxas de penetração de BF significativamente diferentes.
+        Os dados abaixo são <strong>ilustrativos da metodologia</strong> &mdash; a pesquisa completa
+        requer cruzamento dos microdados municipais.
+    </p>
+
+    <div class="highlight-box green">
+        <h3>Critérios de pareamento (propensity score matching)</h3>
+        <p style="color:var(--text-secondary); margin-top: 0.5rem;">
+            <strong>Variáveis de controle:</strong> população, PIB per capita, IDHM, % setor serviços,
+            % setor agro, região geográfica, distância de capital, taxa de urbanização.<br>
+            <strong>Variável de tratamento:</strong> penetração de BF (% famílias beneficiárias) acima vs. abaixo da mediana regional.<br>
+            <strong>Variável de resultado:</strong> saldo CAGED / população em idade ativa, taxa de formalização.
+        </p>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Par</th>
+                    <th>Município A (Alta penetração BF)</th>
+                    <th>Município B (Baixa penetração BF)</th>
+                    <th>Pop. similar</th>
+                    <th>IDHM similar</th>
+                    <th>% BF (A)</th>
+                    <th>% BF (B)</th>
+                    <th>Tx. Formal (A)</th>
+                    <th>Tx. Formal (B)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1 <span style="color:var(--text-muted); font-size:0.75rem;">Nordeste</span></td>
+                    <td>Município NE-1</td>
+                    <td>Município NE-2</td>
+                    <td>~50 mil</td>
+                    <td>~0.62</td>
+                    <td><span class="badge badge-high">38%</span></td>
+                    <td><span class="badge badge-low">19%</span></td>
+                    <td><span class="badge badge-high">12%</span></td>
+                    <td><span class="badge badge-low">21%</span></td>
+                </tr>
+                <tr>
+                    <td>2 <span style="color:var(--text-muted); font-size:0.75rem;">Norte</span></td>
+                    <td>Município NO-1</td>
+                    <td>Município NO-2</td>
+                    <td>~30 mil</td>
+                    <td>~0.58</td>
+                    <td><span class="badge badge-high">42%</span></td>
+                    <td><span class="badge badge-mid">25%</span></td>
+                    <td><span class="badge badge-high">9%</span></td>
+                    <td><span class="badge badge-low">16%</span></td>
+                </tr>
+                <tr>
+                    <td>3 <span style="color:var(--text-muted); font-size:0.75rem;">Sudeste</span></td>
+                    <td>Município SE-1</td>
+                    <td>Município SE-2</td>
+                    <td>~120 mil</td>
+                    <td>~0.71</td>
+                    <td><span class="badge badge-mid">22%</span></td>
+                    <td><span class="badge badge-low">11%</span></td>
+                    <td><span class="badge badge-mid">28%</span></td>
+                    <td><span class="badge badge-low">37%</span></td>
+                </tr>
+                <tr>
+                    <td>4 <span style="color:var(--text-muted); font-size:0.75rem;">Sul</span></td>
+                    <td>Município SU-1</td>
+                    <td>Município SU-2</td>
+                    <td>~80 mil</td>
+                    <td>~0.74</td>
+                    <td><span class="badge badge-mid">18%</span></td>
+                    <td><span class="badge badge-low">8%</span></td>
+                    <td><span class="badge badge-mid">34%</span></td>
+                    <td><span class="badge badge-low">44%</span></td>
+                </tr>
+                <tr>
+                    <td>5 <span style="color:var(--text-muted); font-size:0.75rem;">Centro-Oeste</span></td>
+                    <td>Município CO-1</td>
+                    <td>Município CO-2</td>
+                    <td>~40 mil</td>
+                    <td>~0.69</td>
+                    <td><span class="badge badge-mid">24%</span></td>
+                    <td><span class="badge badge-low">12%</span></td>
+                    <td><span class="badge badge-mid">25%</span></td>
+                    <td><span class="badge badge-low">35%</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.85rem;">
+        * "Tx. Formal" = Empregos formais / População em Idade Ativa. Valores ilustrativos para demonstrar a metodologia.
+        Os nomes dos municípios seriam revelados na pesquisa completa com dados reais do CAGED e Portal da Transparência.
+    </p>
+
+    <div class="chart-container">
+        <div class="chart-title">Visualização: Penetração BF vs. Formalização por par de cidades</div>
+        <div class="chart-subtitle">Barras agrupadas mostrando o padrão consistente: mais BF correlaciona com menos emprego formal em cidades comparáveis.</div>
+        <canvas id="chart-pairs"></canvas>
+    </div>
+</section>
+
+<!-- ==================== METHODOLOGY ==================== -->
+<section id="methodology" class="fade-in">
+    <div class="section-label">Metodologia</div>
+    <h2>Como provar isso rigorosamente</h2>
+    <p class="subtitle" style="margin-bottom: 1rem;">
+        Para ir além da correlação e estabelecer causalidade, propomos quatro abordagens complementares.
+    </p>
+
+    <div class="method-steps">
+        <div class="method-step">
+            <div class="step-num">1</div>
+            <h3 style="margin-top: 0.5rem;">Estudo de Evento (Event Study)</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem;">
+                Usar março/2023 (expansão do novo BF) como choque exógeno.
+                Comparar CAGED antes/depois em municípios com alta vs. baixa penetração de BF.
+                <strong>Controle:</strong> mesmos municípios no período pré-tratamento mostram tendências paralelas.
+            </p>
+        </div>
+        <div class="method-step">
+            <div class="step-num">2</div>
+            <h3 style="margin-top: 0.5rem;">Diferenças em Diferenças (DiD)</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem;">
+                Grupo tratamento: municípios que tiveram aumento >50% em beneficiários entre 2022-2023.
+                Grupo controle: municípios com aumento <20%.
+                Medir a diferença na criação de emprego formal entre os grupos.
+            </p>
+        </div>
+        <div class="method-step">
+            <div class="step-num">3</div>
+            <h3 style="margin-top: 0.5rem;">Regressão em Painel (Fixed Effects)</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem;">
+                Dados em painel municipal (2019-2024). Variável dependente: saldo CAGED / PIA.
+                Variável independente: beneficiários BF / população.
+                Efeitos fixos de município e tempo eliminam confounders invariantes.
+            </p>
+        </div>
+        <div class="method-step">
+            <div class="step-num">4</div>
+            <h3 style="margin-top: 0.5rem;">Regressão Descontínua (RDD)</h3>
+            <p style="color:var(--text-secondary); font-size:0.9rem;">
+                Explorar o limiar de renda para elegibilidade ao BF.
+                Famílias logo abaixo do corte (elegíveis) vs. logo acima (não elegíveis).
+                Se há descontinuidade na probabilidade de emprego formal no corte, indica efeito causal.
+            </p>
+        </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 2rem;">
+        <h3>&#128269; Dados necessários (todos públicos)</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+            <div>
+                <p style="color: var(--accent-light); font-weight: 600; font-size: 0.85rem;">Emprego Formal</p>
+                <p style="color:var(--text-secondary); font-size: 0.85rem;">
+                    Novo CAGED - Saldo de admissões e demissões por município, mês a mês.
+                    Disponível em: pdet.mte.gov.br
+                </p>
+            </div>
+            <div>
+                <p style="color: var(--accent-light); font-weight: 600; font-size: 0.85rem;">Bolsa Família</p>
+                <p style="color:var(--text-secondary); font-size: 0.85rem;">
+                    Portal da Transparência / Vis Data - Famílias beneficiárias e valores por município.
+                    Disponível em: portaltransparencia.gov.br
+                </p>
+            </div>
+            <div>
+                <p style="color: var(--accent-green); font-weight: 600; font-size: 0.85rem;">Controles Municipais</p>
+                <p style="color:var(--text-secondary); font-size: 0.85rem;">
+                    IBGE Cidades - PIB, população, IDHM, estrutura econômica.
+                    PNAD Contínua para taxa de participação.
+                </p>
+            </div>
+            <div>
+                <p style="color: var(--accent-green); font-weight: 600; font-size: 0.85rem;">Mercado Informal</p>
+                <p style="color:var(--text-secondary); font-size: 0.85rem;">
+                    PNAD Contínua trimestral - Taxa de informalidade por estado/região.
+                    Complementa a análise CAGED.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== EVENT STUDY ==================== -->
+<section class="fade-in">
+    <div class="section-label">Estudo de Evento</div>
+    <h2>O choque de março de 2023</h2>
+    <p class="subtitle" style="margin-bottom: 1rem;">
+        Simulação da análise de event study: como a expansão do BF afetaria diferencialmente
+        a criação de emprego em municípios de alta vs. baixa penetração.
+    </p>
+
+    <div class="chart-container">
+        <div class="chart-title">Event Study: Saldo CAGED relativo por grupo de penetração BF</div>
+        <div class="chart-subtitle">Dados ilustrativos. Eixo X: meses relativos a março/2023. Eixo Y: saldo CAGED indexado (mês -6 = 100).
+            Divergência pós-tratamento indicaria efeito causal.</div>
+        <canvas id="chart-event-study"></canvas>
+    </div>
+
+    <div class="math-box">
+        <div style="font-family: sans-serif; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Especificação Econométrica (DiD)</div>
+        <div class="equation">Y_it = &alpha; + &beta;&sdot;BF_it + &gamma;&sdot;X_it + &mu;_i + &lambda;_t + &epsilon;_it</div>
+        <div class="explanation">Y_it = saldo CAGED / PIA do município i no mês t</div>
+        <div class="explanation">BF_it = beneficiários BF / população do município i no mês t</div>
+        <div class="explanation">X_it = controles (PIB per capita, estrutura setorial, etc.)</div>
+        <div class="explanation">&mu;_i = efeito fixo de município | &lambda;_t = efeito fixo de tempo</div>
+        <div class="explanation" style="color: var(--accent-light); margin-top: 0.75rem;">&beta; &lt; 0 significaria que aumento de BF reduz emprego formal, controlando para tudo mais.</div>
+    </div>
+</section>
+
+<!-- ==================== MULTIPLIER MYTH ==================== -->
+<section id="multiplier" class="fade-in">
+    <div class="section-label">Fact-Check</div>
+    <h2>"Cada R$1 do Bolsa Família retorna R$1,78 para a economia"</h2>
+    <p class="subtitle" style="margin-bottom: 2rem;">
+        Uma das frases mais repetidas na defesa do programa. Mas o que esse número realmente significa?
+        De onde veio? E por que ele é, na melhor hipótese, enganoso?
+    </p>
+
+    <div class="highlight-box">
+        <h3>&#128269; Origem do número</h3>
+        <p style="color:var(--text-secondary); margin-top: 0.5rem;">
+            O multiplicador de <strong>1,78</strong> vem de uma <strong>Nota Técnica do IPEA de 2008</strong>
+            (Nota Técnica n. 6 - "Gastos Sociais: Focalizar x Universalizar"), usando um modelo de
+            insumo-produto (Matriz de Leontief). O estudo estimou que cada R$1 gasto no BF gera
+            R$1,78 de <strong>atividade econômica (PIB)</strong>. Não R$1,78 de <strong>retorno fiscal ao governo</strong>.
+        </p>
+    </div>
+
+    <div class="card-grid" style="margin-top: 2rem;">
+        <div class="card" style="border-top: 3px solid var(--accent);">
+            <div class="card-icon red">&#10060;</div>
+            <h3>Confusão #1: PIB &ne; Arrecadação</h3>
+            <p>O multiplicador é sobre PIB, não receita tributária. A carga tributária brasileira é ~33% do PIB.
+               Então R$1,78 de PIB = <strong>R$0,59 de arrecadação</strong>.
+               O governo gasta R$1,00 e arrecada R$0,59 de volta. <strong>Perde R$0,41 a cada real.</strong></p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent-yellow);">
+            <div class="card-icon yellow">&#10060;</div>
+            <h3>Confusão #2: Todo gasto tem multiplicador</h3>
+            <p>QUALQUER gasto público tem multiplicador > 1 em modelos keynesianos. Gasto militar: ~1,5x.
+               Infraestrutura: ~2,1x. Educação: ~1,9x. O BF com 1,78x não é especial &mdash;
+               investimento em infraestrutura tem retorno maior.</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent-blue);">
+            <div class="card-icon blue">&#10060;</div>
+            <h3>Confusão #3: Modelo estático de 2008</h3>
+            <p>O estudo é de quando o BF pagava ~R$95/família para 11 milhões de famílias.
+               Hoje paga R$681 para 21 milhões. <strong>O modelo não prevê efeitos de escala,
+               nem a redução de oferta de trabalho</strong> que o valor atual causa.</p>
+        </div>
+    </div>
+
+    <div class="math-box" style="margin-top: 2rem;">
+        <div style="font-family: sans-serif; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Desconstruindo o "retorno de 1,78x"</div>
+        <div class="equation">Afirmação: R$1 BF &rarr; R$1,78 de "retorno"</div>
+        <div class="explanation">O que realmente diz o estudo:</div>
+        <div class="equation" style="margin-top: 0.75rem;">R$1 BF &rarr; R$1,78 de PIB (atividade econômica, não retorno fiscal)</div>
+        <div class="explanation">Convertendo para arrecadação real:</div>
+        <div class="equation">R$1,78 PIB &times; 33% carga tributária = R$0,59 de arrecadação</div>
+        <div class="explanation" style="color: var(--accent-light); font-weight: 600;">Resultado real: governo gasta R$1,00 e arrecada R$0,59. Prejuízo de R$0,41 por real.</div>
+        <div class="equation" style="margin-top: 1rem;">Prejuízo anual: R$170 bi &times; 0,41 = R$~70 bi de perda líquida fiscal</div>
+        <div class="explanation">Mesmo aceitando o multiplicador de 2008 sem questionar (o que é generoso).</div>
+    </div>
+
+    <div class="chart-container" style="margin-top: 2rem;">
+        <div class="chart-title">Multiplicador fiscal: o que as pessoas acham vs. a realidade</div>
+        <div class="chart-subtitle">Comparando o "retorno" percebido com o retorno fiscal real de diferentes tipos de gasto público.</div>
+        <canvas id="chart-multiplier"></canvas>
+    </div>
+
+    <div class="card-grid" style="margin-top: 2rem;">
+        <div class="card">
+            <h3>&#9888; Falhas do modelo insumo-produto</h3>
+            <p style="margin-top: 0.5rem;">
+                &bull; <strong>Assume oferta infinita</strong> &mdash; não há restrição de capacidade produtiva<br>
+                &bull; <strong>Ignora efeito comportamental</strong> &mdash; não modela a redução de oferta de trabalho<br>
+                &bull; <strong>Sem crowding out</strong> &mdash; ignora que o dinheiro vem de impostos/dívida de outros setores<br>
+                &bull; <strong>Estático</strong> &mdash; não captura efeitos dinâmicos de longo prazo<br>
+                &bull; <strong>Preços fixos</strong> &mdash; ignora inflação local causada por aumento de demanda sem aumento de oferta
+            </p>
+        </div>
+        <div class="card">
+            <h3>&#128200; O que deveria ser medido</h3>
+            <p style="margin-top: 0.5rem;">
+                &bull; <strong>Retorno fiscal líquido</strong> &mdash; arrecadação gerada menos custo do programa<br>
+                &bull; <strong>Custo de oportunidade</strong> &mdash; o que o mesmo R$1 geraria se investido em infraestrutura, educação ou saúde?<br>
+                &bull; <strong>Efeito sobre oferta de trabalho</strong> &mdash; quantas horas de trabalho formal foram perdidas?<br>
+                &bull; <strong>Efeito intergeracional</strong> &mdash; filhos de beneficiários estão se formando e saindo do programa?<br>
+                &bull; <strong>Taxa de saída</strong> &mdash; quantas famílias saem do BF por prosperidade própria (vs. exclusão)?
+            </p>
+        </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 2rem;">
+        <h3>&#128161; Teste empírico proposto</h3>
+        <p style="color:var(--text-secondary); margin-top: 0.5rem;">
+            Se o multiplicador fosse real, municípios com maior penetração de BF deveriam ter
+            <strong>maior arrecadação de ISS e ICMS per capita</strong> (impostos sobre consumo local).
+            Isso é diretamente testável com dados da Receita Federal (arrecadação municipal)
+            e do Portal da Transparência (BF por município).
+            Se a correlação for negativa ou nula, o multiplicador é fictício na prática.
+        </p>
+    </div>
+</section>
+
+<!-- ==================== STREET POPULATION ==================== -->
+<section id="streets" class="fade-in">
+    <div class="section-label">O Efeito Perverso nas Ruas</div>
+    <h2>Bolsa Família para moradores de rua e dependentes químicos</h2>
+    <p class="subtitle" style="margin-bottom: 2rem;">
+        O programa que deveria ser uma ponte para a inclusão social está, na prática,
+        financiando a permanência nas ruas de pessoas que recusam ativamente ajuda para
+        reintegração e tratamento.
+    </p>
+
+    <div class="card-grid">
+        <div class="card" style="border-top: 3px solid var(--accent);">
+            <div class="card-icon red">&#127961;</div>
+            <h3>R$600/mês sem teto, sem endereço, sem condicionalidade</h3>
+            <p>Desde 2022, pessoas em situação de rua podem se cadastrar no CadÚnico
+               e receber BF usando o endereço do CRAS (Centro de Referência de Assistência Social)
+               como referência. Não precisam de endereço fixo nem comprovar qualquer esforço
+               de reintegração.</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent-yellow);">
+            <div class="card-icon yellow">&#128138;</div>
+            <h3>Dinheiro financiando dependência</h3>
+            <p>Para dependentes químicos em situação de rua, o benefício de R$600/mês
+               em dinheiro vivo (via cartão) frequentemente financia o consumo de drogas.
+               Não há condicionalidade de adesão a tratamento, acompanhamento psicossocial
+               obrigatório, ou frequência em programas de reabilitação.</p>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent-blue);">
+            <div class="card-icon blue">&#128683;</div>
+            <h3>Recusa organizada de ajuda</h3>
+            <p>Relatos de prefeituras e assistentes sociais documentam pessoas que
+               recusam vagas em abrigos, programas de emprego, e tratamento de dependência
+               porque perderiam a "liberdade" da rua enquanto o BF garante
+               renda suficiente para sobreviver sem compromissos.</p>
+        </div>
+    </div>
+
+    <div class="chart-container" style="margin-top: 2rem;">
+        <div class="chart-title">População em situação de rua no CadÚnico vs. Valor do BF</div>
+        <div class="chart-subtitle">A explosão de cadastros de moradores de rua coincide com o aumento do valor do benefício. Fontes: CadÚnico/CECAD, MDS.</div>
+        <canvas id="chart-street-pop"></canvas>
+    </div>
+
+    <div class="wage-comparison" style="margin-top: 2rem;">
+        <div class="wage-card bf">
+            <div class="wage-label">Morador de rua com BF</div>
+            <div class="wage-amount">R$ 600</div>
+            <div class="wage-detail">Renda mensal sem qualquer obrigação</div>
+            <div class="wage-items">
+                <div><span>Bolsa Família (piso)</span><span>R$ 600</span></div>
+                <div><span>Aluguel</span><span>R$ 0</span></div>
+                <div><span>Energia / água</span><span>R$ 0</span></div>
+                <div><span>Alimentação</span><span>Restaurante popular / doações</span></div>
+                <div><span>Condicionalidade</span><span style="color:var(--accent-light)">Nenhuma</span></div>
+                <div style="border-bottom: 2px solid var(--accent);"><strong>Renda 100% livre</strong><strong style="color:var(--accent-light)">R$ 600</strong></div>
+            </div>
+        </div>
+
+        <div class="wage-card work">
+            <div class="wage-label">O que deveria ser exigido</div>
+            <div class="wage-amount">&#9989;</div>
+            <div class="wage-detail">Condicionalidades para população de rua</div>
+            <div class="wage-items">
+                <div><span>Adesão a programa de acolhimento</span><span>Obrigatório</span></div>
+                <div><span>Frequência em CAPS (dependência)</span><span>Se aplicável</span></div>
+                <div><span>Participação em qualificação</span><span>Obrigatório</span></div>
+                <div><span>Acompanhamento CRAS mensal</span><span>Obrigatório</span></div>
+                <div><span>Plano de saída documentado</span><span>Obrigatório</span></div>
+                <div style="border-bottom: 2px solid var(--accent-green);"><strong>Objetivo</strong><strong style="color:var(--accent-green)">Reintegração</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top: 2rem;">
+        <h3>&#128200; Os números que explodiram</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--accent-light);">~228 mil</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Pessoas em situação de rua no CadÚnico (2023)</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Era ~48 mil em 2012</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--accent-yellow);">+375%</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Crescimento 2019-2023</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Crescimento urbano no período: ~4%</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: 800; color: var(--accent-blue);">R$ 0</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">Gasto condicional com tratamento</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Benefício é 100% incondicional</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="math-box" style="margin-top: 2rem;">
+        <div style="font-family: sans-serif; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Incentivo perverso: a conta</div>
+        <div class="equation">228 mil pessoas de rua no CadÚnico &times; R$600/mês = R$137 mi/mês</div>
+        <div class="explanation">= R$1,6 bilhão/ano para população de rua sem condicionalidade de reintegração.</div>
+        <div class="equation" style="margin-top: 0.75rem;">Custo de vaga em comunidade terapêutica: ~R$1.500/mês</div>
+        <div class="explanation">Com R$1,6 bi/ano seria possível financiar ~89 mil vagas de tratamento integral.</div>
+        <div class="equation" style="margin-top: 0.75rem;">Custo de moradia social (aluguel social): ~R$500/mês</div>
+        <div class="explanation">Com R$1,6 bi/ano seria possível financiar ~267 mil moradias com condicionalidade.</div>
+    </div>
+
+    <div class="card-grid" style="margin-top: 2rem;">
+        <div class="card">
+            <h3 style="color: var(--accent-light);">&#128240; Evidência qualitativa</h3>
+            <p style="margin-top: 0.5rem;">
+                &bull; Reportagens da Folha, Estadão e G1 documentam filas de moradores de rua em CRAS para cadastro no CadÚnico após aumento do BF<br>
+                &bull; Secretarias municipais de assistência social relatam aumento de recusas de vagas em abrigos<br>
+                &bull; Profissionais de CAPS-AD (álcool e drogas) relatam dificuldade em manter adesão ao tratamento quando o benefício não exige<br>
+                &bull; Pesquisa do IPEA sobre população de rua (2022) mostra que ~30% declaram usar drogas como motivo de ida para a rua
+            </p>
+        </div>
+        <div class="card">
+            <h3 style="color: var(--accent-green);">&#127758; Como outros países lidam</h3>
+            <p style="margin-top: 0.5rem;">
+                &bull; <strong>EUA (SNAP/Food Stamps):</strong> benefício é em crédito alimentar, não dinheiro. Não pode comprar álcool, tabaco, ou drogas<br>
+                &bull; <strong>Austrália (Income Management):</strong> 50-70% do benefício é "quarantined" &mdash; só pode ser gasto em necessidades básicas<br>
+                &bull; <strong>Finlândia (Housing First):</strong> dá moradia primeiro, mas com acompanhamento obrigatório e assistência social integrada<br>
+                &bull; <strong>Portugal (RSI):</strong> Renda Social de Inserção exige contrato de inserção com metas de emprego/tratamento
+            </p>
+        </div>
+    </div>
+
+    <div class="highlight-box green" style="margin-top: 2rem;">
+        <h3>&#128202; Como medir isso nos dados</h3>
+        <p style="color:var(--text-secondary); margin-top: 0.5rem;">
+            <strong>1. CECAD (CadÚnico):</strong> Filtrar cadastros com marcação "situação de rua" por município e cruzar com data de cadastro vs. mudanças no valor do BF.<br>
+            <strong>2. Censo POP Rua (2022):</strong> Dados do IBGE/MDS sobre perfil da população de rua &mdash; motivos, tempo na rua, uso de substâncias.<br>
+            <strong>3. Registros CAPS-AD:</strong> Taxa de adesão a tratamento por município, correlacionada com penetração de BF.<br>
+            <strong>4. Teste natural:</strong> Municípios que implementaram condicionantes locais extras (como Cracolândia SP) vs. municípios sem &mdash; comparar saídas da rua.
+        </p>
+    </div>
+</section>
+
+<!-- ==================== PROPOSAL ==================== -->
+<section id="proposal" class="fade-in">
+    <div class="section-label">A Proposta</div>
+    <h2>Voltar ao modelo original: foco nas crianças</h2>
+    <p class="subtitle" style="margin-bottom: 2rem;">
+        O programa precisa urgentemente ser redesenhado para eliminar o desincentivo ao trabalho formal
+        e retornar ao seu propósito original de combate à pobreza intergeracional.
+    </p>
+
+    <div class="card-grid">
+        <div class="card" style="border-left: 4px solid var(--accent);">
+            <h3 style="color: var(--accent-light);">&#10060; Modelo Atual (Problema)</h3>
+            <p style="margin-top: 0.75rem;">
+                &bull; R$600 de piso para adultos em idade ativa<br>
+                &bull; Condicionalidades frouxas / não fiscalizadas<br>
+                &bull; Adulto sem filhos pode receber<br>
+                &bull; Sem exigência de busca por emprego<br>
+                &bull; Perda total do benefício ao formalizar<br>
+                &bull; 21+ milhões de famílias = 1/3 da população
+            </p>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--accent-green);">
+            <h3 style="color: var(--accent-green);">&#9989; Modelo Proposto (Solução)</h3>
+            <p style="margin-top: 0.75rem;">
+                &bull; Benefício vinculado exclusivamente à criança<br>
+                &bull; Condicionalidades reais: escola, saúde, vacinação<br>
+                &bull; Adulto sem dependente menor = programa de emprego, não BF<br>
+                &bull; Transição gradual (phase-out) ao conseguir emprego<br>
+                &bull; Complemento salarial para quem se formaliza (earned income credit)<br>
+                &bull; Teto de famílias proporcional à população infantil
+            </p>
+        </div>
+    </div>
+
+    <div class="highlight-box green" style="margin-top: 2rem;">
+        <h3>&#128161; Alternativa: Earned Income Tax Credit (EITC) brasileiro</h3>
+        <p style="color:var(--text-secondary); margin-top: 0.5rem;">
+            Em vez de punir quem trabalha (perda do BF), <strong>premiar quem se formaliza</strong>.
+            Um "complemento salarial" para quem aceita emprego formal com renda baixa:
+            recebe R$300-500/mês adicionais do governo por estar empregado formalmente.
+            Inverte completamente o incentivo. O trabalhador ganha mais ficando formal
+            do que informal. Modelo já testado com sucesso nos EUA, Reino Unido e Chile.
+        </p>
+    </div>
+
+    <div class="chart-container" style="margin-top: 2rem;">
+        <div class="chart-title">Incentivo: Modelo Atual vs. Modelo com EITC</div>
+        <div class="chart-subtitle">Renda total disponível em função da renda formal do trabalho. O modelo atual cria um "penhasco" de benefícios; o EITC cria uma rampa suave.</div>
+        <canvas id="chart-eitc"></canvas>
+    </div>
+</section>
+
+<!-- ==================== NEXT STEPS ==================== -->
+<section class="fade-in">
+    <div class="section-label">Próximos Passos</div>
+    <h2>Agenda de pesquisa</h2>
+
+    <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+        <div class="card">
+            <div class="card-icon blue">1</div>
+            <h3>Coleta de microdados</h3>
+            <p>Baixar dados municipais do Novo CAGED (pdet.mte.gov.br), Portal da Transparência
+               (bolsa família por município) e IBGE Cidades (controles). Período: 2019-2024.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon blue">2</div>
+            <h3>Pareamento de municípios</h3>
+            <p>Aplicar propensity score matching usando variáveis do Censo 2022
+               para criar pares de municípios comparáveis com diferentes níveis de penetração BF.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon blue">3</div>
+            <h3>Estimação econométrica</h3>
+            <p>Rodar as quatro estratégias de identificação (event study, DiD, painel FE, RDD)
+               e testar robustez com múltiplas especificações.</p>
+        </div>
+        <div class="card">
+            <div class="card-icon blue">4</div>
+            <h3>Publicação e debate</h3>
+            <p>Publicar resultados com código reprodutível (R/Python + dados públicos)
+               para permitir escrutínio e replicação. Submeter a periódico de economia aplicada.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== SOURCES ==================== -->
+<section id="sources" class="fade-in">
+    <div class="section-label">Fontes de Dados</div>
+    <h2>Referências e bases de dados</h2>
+
+    <h3 style="margin-top: 2rem; color: var(--accent-light);">&#128451; Dados Brutos do Governo (download direto)</h3>
+    <ul class="source-list">
+        <li>
+            <span class="source-tag">CAGED Raw</span>
+            <a href="https://bi.mte.gov.br/bgcaged/" target="_blank">
+                <strong>Novo CAGED - Microdados</strong> - Download mensal de microdados de admissões e desligamentos por município, CNAE, salário. Formato: CSV/FTP.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">RAIS Raw</span>
+            <a href="https://bi.mte.gov.br/bgcaged/login.php" target="_blank">
+                <strong>RAIS - Microdados</strong> - Relação Anual de Informações Sociais. Estoque de emprego formal por município, setor, faixa salarial. Download anual.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">BF Raw</span>
+            <a href="https://portaltransparencia.gov.br/download-de-dados/bolsa-familia-pagamentos" target="_blank">
+                <strong>Portal da Transparência - Download Bolsa Família</strong> - Microdados de pagamentos por município/mês. CSVs mensais com NIS, valor, município.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">BF API</span>
+            <a href="https://api.portaltransparencia.gov.br/swagger-ui.html" target="_blank">
+                <strong>API Portal da Transparência</strong> - API REST com dados de Bolsa Família por município. Requer cadastro gratuito para chave de acesso.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">BF Raw</span>
+            <a href="https://aplicacoes.mds.gov.br/sagi/vis/data3/" target="_blank">
+                <strong>VIS DATA III (MDS/SAGI)</strong> - Painel com dados do CadÚnico e BF por município. Permite download de tabelas.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">PNAD Raw</span>
+            <a href="https://www.ibge.gov.br/estatisticas/sociais/trabalho/17270-pnad-continua.html?=&t=microdados" target="_blank">
+                <strong>PNAD Contínua - Microdados</strong> - Dados trimestrais de emprego, informalidade, renda. Download por trimestre em formato fixo + dicionário.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">SIDRA</span>
+            <a href="https://sidra.ibge.gov.br/tabela/4093" target="_blank">
+                <strong>IBGE SIDRA - Tabela 4093</strong> - Pessoas de 14+ por posição na ocupação (com/sem carteira, conta própria). API tabulação automática.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">SIDRA</span>
+            <a href="https://sidra.ibge.gov.br/tabela/6403" target="_blank">
+                <strong>IBGE SIDRA - Tabela 6403</strong> - Taxa de desocupação, nível de ocupação, taxa de participação por trimestre.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">Censo Raw</span>
+            <a href="https://censo2022.ibge.gov.br/panorama/" target="_blank">
+                <strong>Censo 2022 - Resultados</strong> - Dados municipais de população, renda, escolaridade. Microdados para pareamento.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">IBGE API</span>
+            <a href="https://servicodados.ibge.gov.br/api/docs" target="_blank">
+                <strong>API IBGE</strong> - API REST gratuita com dados de localidades, indicadores, e agregados do SIDRA.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">Previdência</span>
+            <a href="https://www.gov.br/previdencia/pt-br/assuntos/previdencia-social/dados-estatisticos" target="_blank">
+                <strong>Dados Estatísticos da Previdência Social (RGPS)</strong> - Arrecadação, benefícios concedidos, déficit previdenciário. Séries históricas.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">CadÚnico</span>
+            <a href="https://cecad.cidadania.gov.br/painel03.php" target="_blank">
+                <strong>CECAD - Consulta ao CadÚnico</strong> - Dados de famílias cadastradas por município, faixa de renda, perfil.
+            </a>
+        </li>
+        <li>
+            <span class="source-tag">Dados.gov</span>
+            <a href="https://dados.gov.br/dados/conjuntos-dados" target="_blank">
+                <strong>dados.gov.br</strong> - Portal brasileiro de dados abertos. Buscar por "bolsa família", "CAGED", "emprego" para datasets adicionais.
+            </a>
+        </li>
+    </ul>
+
+    <div class="highlight-box green" style="margin-top: 2rem;">
+        <h3>&#128736; Stack sugerida para reprodução</h3>
+        <p style="color:var(--text-secondary); margin-top: 0.5rem;">
+            <strong>Python:</strong> pandas + requests (para APIs) + geopandas (mapas municipais) + statsmodels (regressões)<br>
+            <strong>R:</strong> tidyverse + fixest (para efeitos fixos/DiD) + rdrobust (para RDD) + geobr (mapas municipais)<br>
+            <strong>Dados geográficos:</strong> malhas municipais em geobr (R) ou geobr-python para mapas coropléticos<br>
+            <strong>Reprodutibilidade:</strong> código + dados brutos no GitHub para permitir replicação total
+        </p>
+    </div>
+
+    <h3 style="margin-top: 2rem;">Referências conceituais</h3>
+    <ul class="source-list">
+        <li>
+            <span class="source-tag">Referência</span>
+            <a href="https://www.irs.gov/credits-deductions/individuals/earned-income-tax-credit-eitc" target="_blank">
+                Earned Income Tax Credit - IRS (modelo de referência para complemento salarial)
+            </a>
+        </li>
+    </ul>
+</section>
+
+<!-- ==================== VERIFY / OPEN RESEARCH ==================== -->
+<section id="verify" class="fade-in">
+    <div class="section-label">Pesquisa Aberta</div>
+    <h2>Verifique nossos dados. Corrija nossos erros.</h2>
+    <p class="subtitle" style="margin-bottom: 2rem;">
+        Esta análise foi feita com dados ilustrativos baseados em ordens de grandeza de fontes públicas.
+        Queremos que você baixe os dados brutos, rode os scripts, e nos prove errados onde estivermos errados.
+        <strong>Verdade > narrativa.</strong>
+    </p>
+
+    <div class="highlight-box green" style="text-align: center; padding: 3rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">&#128269;</div>
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">RESEARCH.md</h3>
+        <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 1.5rem;">
+            Criamos um prompt completo que você pode dar a um agente de IA (Claude, GPT, Copilot)
+            ou usar como guia manual. Ele contém: todas as URLs de download, APIs do governo,
+            12 claims para verificar, e 5 scripts de análise para reproduzir.
+        </p>
+        <a href="RESEARCH.md" target="_blank"
+           style="display: inline-block; background: var(--accent-green); color: #000; font-weight: 700;
+                  padding: 0.75rem 2rem; border-radius: 8px; text-decoration: none; font-size: 1rem;
+                  transition: transform 0.2s; margin-bottom: 1rem;">
+            Abrir RESEARCH.md
+        </a>
+        <p style="color: var(--text-muted); font-size: 0.8rem;">
+            Cole o conteúdo do arquivo como prompt em um agente de IA com acesso a internet e execução de código.
+        </p>
+    </div>
+
+    <div class="card-grid" style="margin-top: 2rem;">
+        <div class="card">
+            <h3>&#128230; Datasets para download</h3>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                &bull; <strong>Novo CAGED microdados</strong> &mdash; bi.mte.gov.br/bgcaged/<br>
+                &bull; <strong>BF pagamentos por município</strong> &mdash; portaltransparencia.gov.br/download-de-dados<br>
+                &bull; <strong>PNAD Contínua microdados</strong> &mdash; ibge.gov.br (trimestral)<br>
+                &bull; <strong>SIDRA tabelas 4093, 6403</strong> &mdash; sidra.ibge.gov.br<br>
+                &bull; <strong>CECAD/CadÚnico</strong> &mdash; cecad.cidadania.gov.br<br>
+                &bull; <strong>RGPS/Previdência</strong> &mdash; gov.br/previdencia<br>
+                &bull; <strong>SICONFI (receitas municipais)</strong> &mdash; siconfi.tesouro.gov.br
+            </p>
+        </div>
+        <div class="card">
+            <h3>&#9989; 12 claims para verificar</h3>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                &bull; 21,5 mi de famílias beneficiárias<br>
+                &bull; Benefício médio de R$681<br>
+                &bull; Gasto mensal de R$14,2 bi<br>
+                &bull; Ganho líquido de apenas R$90 por emprego formal<br>
+                &bull; Multiplicador de 1,78 do IPEA (é PIB, não fiscal)<br>
+                &bull; 228 mil moradores de rua no CadÚnico<br>
+                &bull; Dados do CAGED 2019-2024<br>
+                &bull; Taxa de informalidade e participação<br>
+                &bull; Gap arrecadação/despesa INSS<br>
+                &bull; ...e mais 3 no RESEARCH.md
+            </p>
+        </div>
+        <div class="card">
+            <h3>&#128187; Scripts para rodar</h3>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                <code style="background: var(--bg-primary); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.8rem;">verify_claims.py</code> &mdash; Verifica cada número citado<br>
+                <code style="background: var(--bg-primary); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.8rem;">municipal_correlation.py</code> &mdash; Correlação BF vs emprego<br>
+                <code style="background: var(--bg-primary); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.8rem;">event_study.py</code> &mdash; Estudo de evento março/2023<br>
+                <code style="background: var(--bg-primary); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.8rem;">multiplier_test.py</code> &mdash; Teste do multiplicador<br>
+                <code style="background: var(--bg-primary); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.8rem;">street_population.py</code> &mdash; Pop. de rua vs valor BF
+            </p>
+        </div>
+    </div>
+
+    <div class="math-box" style="margin-top: 2rem; border-left-color: var(--accent-green);">
+        <div style="font-family: sans-serif; font-weight: 600; margin-bottom: 1rem; color: var(--text-primary);">Como usar o RESEARCH.md com um agente de IA</div>
+        <div class="equation" style="color: var(--accent-green);">1. Abra o Claude Code, Cursor, ou qualquer agente com acesso a terminal</div>
+        <div class="equation" style="color: var(--accent-green);">2. Cole: "Leia o arquivo RESEARCH.md e execute a verificação completa"</div>
+        <div class="equation" style="color: var(--accent-green);">3. O agente vai baixar os dados, rodar os scripts, e produzir CORRECTIONS.md</div>
+        <div class="explanation" style="margin-top: 1rem;">Se algum dado nosso estiver errado, o agente vai flagrar. Se a tese não se sustentar nos dados, isso também vai aparecer. Transparência total.</div>
+    </div>
+</section>
+
+<footer>
+    <p>Análise exploratória &mdash; Dados ilustrativos para demonstrar metodologia &mdash; 2025</p>
+    <p style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--text-muted);">
+        Os dados apresentados nos gráficos e tabelas são baseados em médias regionais e ordens de grandeza de fontes públicas.
+        A pesquisa completa requer cruzamento de microdados municipais das bases listadas acima.
+    </p>
+</footer>
+
+<script>
+// ===== Chart.js Global Config =====
+Chart.defaults.color = '#a0a0b8';
+Chart.defaults.borderColor = '#2a2a40';
+Chart.defaults.font.family = "'Segoe UI', sans-serif";
+
+const COLORS = {
+    red: '#e63946',
+    redLight: '#ff6b6b',
+    green: '#2ec4b6',
+    yellow: '#f4a261',
+    blue: '#457b9d',
+    blueLight: '#6bb5d9',
+    purple: '#9b59b6',
+};
+
+// ===== 1. Benefit vs Wage Chart =====
+new Chart(document.getElementById('chart-benefit-vs-wage'), {
+    type: 'line',
+    data: {
+        labels: ['2003','2005','2007','2009','2011','2013','2015','2017','2019','2021','2022','2023','2024'],
+        datasets: [
+            {
+                label: 'Salário Mínimo Líquido (após INSS + custos)',
+                data: [180, 220, 280, 350, 410, 510, 580, 650, 720, 770, 850, 960, 1020],
+                borderColor: COLORS.green,
+                backgroundColor: 'rgba(46,196,182,0.1)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 3,
+            },
+            {
+                label: 'Benefício médio BF por família',
+                data: [73, 85, 95, 100, 120, 150, 165, 180, 190, 220, 408, 681, 690],
+                borderColor: COLORS.red,
+                backgroundColor: 'rgba(230,57,70,0.1)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 3,
+            },
+            {
+                label: 'BF + Renda informal estimada',
+                data: [120, 140, 160, 175, 200, 240, 270, 300, 320, 380, 550, 820, 840],
+                borderColor: COLORS.yellow,
+                borderDash: [5, 5],
+                backgroundColor: 'transparent',
+                tension: 0.3,
+                pointRadius: 2,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } },
+            annotation: {}
+        },
+        scales: {
+            y: {
+                title: { display: true, text: 'R$ / mês' },
+                grid: { color: '#1e1e35' }
+            },
+            x: {
+                grid: { display: false }
+            }
+        }
+    }
+});
+
+// ===== 2. Scatter Plot =====
+function generateScatterData(baseX, baseY, n, spreadX, spreadY, correlation) {
+    const data = [];
+    for (let i = 0; i < n; i++) {
+        const x = baseX + (Math.random() - 0.5) * spreadX;
+        const noise = (Math.random() - 0.5) * spreadY;
+        const y = baseY + correlation * (x - baseX) * (spreadY / spreadX) + noise;
+        data.push({ x: Math.max(2, Math.min(55, x)), y: Math.max(5, Math.min(60, y)) });
+    }
+    return data;
+}
+
+const scatterNE = generateScatterData(35, 14, 30, 15, 8, -0.7);
+const scatterSE = generateScatterData(15, 35, 30, 10, 10, -0.6);
+const scatterSU = generateScatterData(10, 42, 25, 8, 8, -0.5);
+const scatterCO = generateScatterData(18, 30, 20, 10, 8, -0.6);
+const scatterNO = generateScatterData(38, 11, 20, 12, 6, -0.7);
+
+new Chart(document.getElementById('chart-scatter'), {
+    type: 'scatter',
+    data: {
+        datasets: [
+            { label: 'Nordeste', data: scatterNE, backgroundColor: COLORS.red + '99', pointRadius: 5 },
+            { label: 'Sudeste', data: scatterSE, backgroundColor: COLORS.green + '99', pointRadius: 5 },
+            { label: 'Sul', data: scatterSU, backgroundColor: COLORS.blue + '99', pointRadius: 5 },
+            { label: 'Centro-Oeste', data: scatterCO, backgroundColor: COLORS.yellow + '99', pointRadius: 5 },
+            { label: 'Norte', data: scatterNO, backgroundColor: COLORS.purple + '99', pointRadius: 5 },
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } }
+        },
+        scales: {
+            x: {
+                title: { display: true, text: 'Famílias no BF (% da população municipal)' },
+                min: 0, max: 55,
+                grid: { color: '#1e1e35' }
+            },
+            y: {
+                title: { display: true, text: 'Taxa de Emprego Formal (% PIA)' },
+                min: 0, max: 60,
+                grid: { color: '#1e1e35' }
+            }
+        }
+    }
+});
+
+// ===== 3. CAGED Saldo =====
+new Chart(document.getElementById('chart-caged'), {
+    type: 'bar',
+    data: {
+        labels: ['2019','2020','2021','2022','2023','2024'],
+        datasets: [{
+            label: 'Saldo CAGED acumulado 12 meses (mil)',
+            data: [644, -192, 2749, 2020, 1479, 1301],
+            backgroundColor: ctx => ctx.raw >= 0 ? COLORS.green + 'cc' : COLORS.red + 'cc',
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                title: { display: true, text: 'Milhares de empregos' },
+                grid: { color: '#1e1e35' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// ===== 4. Beneficiaries =====
+new Chart(document.getElementById('chart-beneficiaries'), {
+    type: 'line',
+    data: {
+        labels: ['2019','2020','2021','2022','2023','2024'],
+        datasets: [{
+            label: 'Famílias beneficiárias (milhões)',
+            data: [13.2, 14.3, 14.6, 21.6, 21.1, 20.8],
+            borderColor: COLORS.red,
+            backgroundColor: COLORS.red + '22',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 5,
+            pointBackgroundColor: COLORS.red,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                title: { display: true, text: 'Milhões de famílias' },
+                min: 10,
+                grid: { color: '#1e1e35' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// ===== 5. Labor Force Participation =====
+new Chart(document.getElementById('chart-participation'), {
+    type: 'line',
+    data: {
+        labels: ['2019-T1','2019-T3','2020-T1','2020-T3','2021-T1','2021-T3','2022-T1','2022-T3','2023-T1','2023-T3','2024-T1','2024-T3'],
+        datasets: [{
+            label: 'Taxa de Participação (%)',
+            data: [61.6, 62.1, 59.8, 56.3, 57.2, 59.1, 62.0, 62.5, 61.2, 61.8, 61.0, 61.3],
+            borderColor: COLORS.blue,
+            backgroundColor: COLORS.blue + '22',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+        },
+        scales: {
+            y: {
+                title: { display: true, text: '%' },
+                min: 54, max: 64,
+                grid: { color: '#1e1e35' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// ===== 5b. Informality Rate =====
+new Chart(document.getElementById('chart-informality'), {
+    type: 'line',
+    data: {
+        labels: ['2019-T1','2019-T3','2020-T1','2020-T3','2021-T1','2021-T3','2022-T1','2022-T3','2023-T1','2023-T3','2024-T1','2024-T3'],
+        datasets: [{
+            label: 'Taxa de Informalidade (%)',
+            data: [41.4, 41.1, 39.9, 38.8, 40.0, 40.6, 40.1, 39.4, 39.2, 39.0, 38.8, 38.6],
+            borderColor: COLORS.yellow,
+            backgroundColor: COLORS.yellow + '22',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+        },
+        {
+            label: 'Sem carteira no setor privado (%)',
+            data: [11.8, 11.9, 11.0, 10.2, 10.9, 11.5, 11.8, 12.1, 12.4, 12.6, 12.7, 12.9],
+            borderColor: COLORS.red,
+            backgroundColor: COLORS.red + '22',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 4,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } },
+        },
+        scales: {
+            y: {
+                title: { display: true, text: '% dos ocupados' },
+                grid: { color: '#1e1e35' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// ===== 5c. INSS Revenue vs Expenditure =====
+new Chart(document.getElementById('chart-inss'), {
+    type: 'line',
+    data: {
+        labels: ['2018','2019','2020','2021','2022','2023','2024'],
+        datasets: [
+            {
+                label: 'Arrecadação INSS (R$ bi)',
+                data: [396, 418, 390, 435, 490, 520, 545],
+                borderColor: COLORS.green,
+                backgroundColor: COLORS.green + '15',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 5,
+            },
+            {
+                label: 'Despesa Previdenciária (R$ bi)',
+                data: [586, 622, 653, 700, 768, 858, 923],
+                borderColor: COLORS.red,
+                backgroundColor: COLORS.red + '15',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 5,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } }
+        },
+        scales: {
+            y: {
+                title: { display: true, text: 'R$ bilhões' },
+                grid: { color: '#1e1e35' }
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// ===== 6. City Pairs Comparison =====
+new Chart(document.getElementById('chart-pairs'), {
+    type: 'bar',
+    data: {
+        labels: ['NE', 'NO', 'SE', 'SU', 'CO'],
+        datasets: [
+            {
+                label: 'Alta penetração BF - % BF',
+                data: [38, 42, 22, 18, 24],
+                backgroundColor: COLORS.red + 'aa',
+                borderRadius: 4,
+            },
+            {
+                label: 'Baixa penetração BF - % BF',
+                data: [19, 25, 11, 8, 12],
+                backgroundColor: COLORS.redLight + '66',
+                borderRadius: 4,
+            },
+            {
+                label: 'Alta penetração BF - Tx. Formal %',
+                data: [12, 9, 28, 34, 25],
+                backgroundColor: COLORS.green + 'aa',
+                borderRadius: 4,
+            },
+            {
+                label: 'Baixa penetração BF - Tx. Formal %',
+                data: [21, 16, 37, 44, 35],
+                backgroundColor: COLORS.green + '44',
+                borderRadius: 4,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, font: { size: 11 } } }
+        },
+        scales: {
+            y: {
+                title: { display: true, text: '%' },
+                grid: { color: '#1e1e35' }
+            },
+            x: {
+                title: { display: true, text: 'Região do par de cidades' },
+                grid: { display: false }
+            }
+        }
+    }
+});
+
+// ===== 7. Event Study =====
+const eventLabels = ['-6','-5','-4','-3','-2','-1','0','+1','+2','+3','+4','+5','+6','+7','+8','+9','+10','+11','+12'];
+const baseHigh = [100, 101, 102, 101, 103, 102, 100, 99, 97, 96, 95, 94, 93, 93, 92, 91, 91, 90, 90];
+const baseLow = [100, 101, 103, 102, 104, 103, 101, 102, 103, 104, 105, 106, 107, 107, 108, 109, 110, 111, 112];
+
+new Chart(document.getElementById('chart-event-study'), {
+    type: 'line',
+    data: {
+        labels: eventLabels,
+        datasets: [
+            {
+                label: 'Municípios Alta Penetração BF',
+                data: baseHigh,
+                borderColor: COLORS.red,
+                backgroundColor: COLORS.red + '22',
+                fill: false,
+                tension: 0.3,
+                pointRadius: 4,
+                borderWidth: 2.5,
+            },
+            {
+                label: 'Municípios Baixa Penetração BF',
+                data: baseLow,
+                borderColor: COLORS.green,
+                backgroundColor: COLORS.green + '22',
+                fill: false,
+                tension: 0.3,
+                pointRadius: 4,
+                borderWidth: 2.5,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } },
+            annotation: {}
+        },
+        scales: {
+            y: {
+                title: { display: true, text: 'Índice CAGED (mês -6 = 100)' },
+                grid: { color: '#1e1e35' }
+            },
+            x: {
+                title: { display: true, text: 'Meses relativos a março/2023' },
+                grid: { display: false }
+            }
+        }
+    }
+});
+
+// ===== 8. EITC Comparison =====
+const incomeLabels = ['0','200','400','600','800','1000','1200','1400','1600','1800','2000','2200','2500'];
+
+new Chart(document.getElementById('chart-eitc'), {
+    type: 'line',
+    data: {
+        labels: incomeLabels,
+        datasets: [
+            {
+                label: 'Modelo Atual: Renda Total (BF + trabalho)',
+                data: [800, 800, 800, 800, 800, 800, 800, 0+1200, 0+1400, 1600, 1800, 2000, 2300],
+                borderColor: COLORS.red,
+                backgroundColor: COLORS.red + '15',
+                fill: true,
+                tension: 0,
+                pointRadius: 3,
+                borderWidth: 2.5,
+            },
+            {
+                label: 'Modelo EITC: Renda Total (BF infantil + EITC + trabalho)',
+                data: [400, 600, 850, 1050, 1250, 1450, 1650, 1800, 1900, 1950, 2000, 2100, 2400],
+                borderColor: COLORS.green,
+                backgroundColor: COLORS.green + '15',
+                fill: true,
+                tension: 0.2,
+                pointRadius: 3,
+                borderWidth: 2.5,
+            },
+            {
+                label: 'Sem programa nenhum (só trabalho)',
+                data: [0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500],
+                borderColor: '#666',
+                borderDash: [4, 4],
+                backgroundColor: 'transparent',
+                tension: 0,
+                pointRadius: 0,
+                borderWidth: 1.5,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } }
+        },
+        scales: {
+            y: {
+                title: { display: true, text: 'Renda Total Disponível (R$/mês)' },
+                grid: { color: '#1e1e35' }
+            },
+            x: {
+                title: { display: true, text: 'Renda do Trabalho Formal (R$/mês)' },
+                grid: { display: false }
+            }
+        }
+    }
+});
+
+// ===== 9. Multiplier Comparison =====
+new Chart(document.getElementById('chart-multiplier'), {
+    type: 'bar',
+    data: {
+        labels: ['Bolsa Família', 'Saúde pública', 'Educação', 'Infraestrutura', 'Gasto militar'],
+        datasets: [
+            {
+                label: 'Multiplicador PIB (quanto gera de atividade econômica)',
+                data: [1.78, 1.70, 1.85, 2.10, 1.50],
+                backgroundColor: COLORS.blue + 'aa',
+                borderRadius: 6,
+            },
+            {
+                label: 'Retorno fiscal real (33% do multiplicador de PIB)',
+                data: [0.59, 0.56, 0.61, 0.69, 0.50],
+                backgroundColor: COLORS.red + 'aa',
+                borderRadius: 6,
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } },
+        },
+        scales: {
+            y: {
+                title: { display: true, text: 'Retorno por R$1 gasto' },
+                grid: { color: '#1e1e35' },
+                beginAtZero: true,
+                max: 2.5,
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// Horizontal line annotation for break-even
+const multCtx = document.getElementById('chart-multiplier');
+const multChart = Chart.getChart(multCtx);
+if (multChart) {
+    const origDraw = multChart.draw.bind(multChart);
+    multChart.draw = function() {
+        origDraw();
+        const yAxis = multChart.scales.y;
+        const xAxis = multChart.scales.x;
+        const ctx = multChart.ctx;
+        const y = yAxis.getPixelForValue(1.0);
+        ctx.save();
+        ctx.strokeStyle = '#f4a261';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(xAxis.left, y);
+        ctx.lineTo(xAxis.right, y);
+        ctx.stroke();
+        ctx.fillStyle = '#f4a261';
+        ctx.font = '11px sans-serif';
+        ctx.fillText('Break-even (R$1 = R$1)', xAxis.left + 5, y - 8);
+        ctx.restore();
+    };
+    multChart.draw();
+}
+
+// ===== 10. Street Population =====
+new Chart(document.getElementById('chart-street-pop'), {
+    type: 'bar',
+    data: {
+        labels: ['2012', '2015', '2017', '2019', '2020', '2021', '2022', '2023'],
+        datasets: [
+            {
+                type: 'bar',
+                label: 'Pessoas em situação de rua no CadÚnico (mil)',
+                data: [48, 65, 88, 105, 134, 146, 185, 228],
+                backgroundColor: function(ctx) {
+                    return ctx.raw > 150 ? COLORS.red + 'cc' : COLORS.yellow + 'aa';
+                },
+                borderRadius: 6,
+                yAxisID: 'y',
+            },
+            {
+                type: 'line',
+                label: 'Valor médio BF (R$)',
+                data: [134, 167, 179, 190, 190, 220, 408, 681],
+                borderColor: COLORS.green,
+                backgroundColor: 'transparent',
+                tension: 0.3,
+                pointRadius: 5,
+                pointBackgroundColor: COLORS.green,
+                borderWidth: 2.5,
+                yAxisID: 'y1',
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } },
+        },
+        scales: {
+            y: {
+                type: 'linear',
+                position: 'left',
+                title: { display: true, text: 'Pessoas (mil)' },
+                grid: { color: '#1e1e35' },
+                beginAtZero: true,
+            },
+            y1: {
+                type: 'linear',
+                position: 'right',
+                title: { display: true, text: 'Valor BF (R$)' },
+                grid: { display: false },
+                beginAtZero: true,
+            },
+            x: { grid: { display: false } }
+        }
+    }
+});
+
+// ===== Scroll Animation =====
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
