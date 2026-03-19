@@ -3,3 +3,6 @@
 .wrangler/
 .mcp.json
 skills-lock.json
+.env
+# Raw CAGED microdados (~350MB each, re-download with --no-cache)
+data/caged/
